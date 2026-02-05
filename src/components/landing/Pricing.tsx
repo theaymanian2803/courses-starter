@@ -2,7 +2,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Zap, Shield, Download, Clock, MessageCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+ import { Link, useNavigate } from "react-router-dom";
+ import { useState, useEffect } from "react";
+ import { supabase } from "@/integrations/supabase/client";
+ import { toast } from "sonner";
+ import { Loader2 } from "lucide-react";
 
 const features = [
   { icon: Download, text: "Complete source code included" },
@@ -14,6 +18,61 @@ const features = [
 ];
 
 export const Pricing = () => {
+   const navigate = useNavigate();
+   const [isLoading, setIsLoading] = useState(false);
+   const [user, setUser] = useState<any>(null);
+   const [hasPurchased, setHasPurchased] = useState(false);
+ 
+   useEffect(() => {
+     const checkUser = async () => {
+       const { data: { session } } = await supabase.auth.getSession();
+       setUser(session?.user || null);
+       
+       if (session?.user) {
+         const { data: purchases } = await supabase
+           .from("purchases")
+           .select("id")
+           .eq("user_id", session.user.id);
+         setHasPurchased((purchases && purchases.length > 0) || false);
+       }
+     };
+     
+     checkUser();
+ 
+     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+       setUser(session?.user || null);
+     });
+ 
+     return () => subscription.unsubscribe();
+   }, []);
+ 
+   const handlePurchase = async () => {
+     if (!user) {
+       navigate("/auth");
+       return;
+     }
+ 
+     setIsLoading(true);
+     try {
+       const { data, error } = await supabase.functions.invoke("create-checkout", {
+         body: { courseId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890" },
+       });
+ 
+       if (error) throw error;
+ 
+       if (data?.url) {
+         window.location.href = data.url;
+       } else {
+         throw new Error("No checkout URL returned");
+       }
+     } catch (error: any) {
+       console.error("Checkout error:", error);
+       toast.error(error.message || "Failed to start checkout");
+     } finally {
+       setIsLoading(false);
+     }
+   };
+ 
   return (
     <section id="pricing" className="py-24 bg-background relative overflow-hidden">
       {/* Background glow */}
@@ -101,12 +160,33 @@ export const Pricing = () => {
             </div>
 
             {/* CTA */}
-            <Button asChild size="lg" className="w-full text-lg py-6 box-glow">
-              <Link to="/auth">
+             {hasPurchased ? (
+               <Button asChild size="lg" className="w-full text-lg py-6">
+                 <Link to="/dashboard">
+                   Go to Dashboard
+                   <Zap className="ml-2 h-5 w-5" />
+                 </Link>
+               </Button>
+             ) : (
+               <Button
+                 size="lg"
+                 className="w-full text-lg py-6 box-glow"
+                 onClick={handlePurchase}
+                 disabled={isLoading}
+               >
+                 {isLoading ? (
+                   <>
+                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                     Processing...
+                   </>
+                 ) : (
+                   <>
                 Enroll Now
                 <Zap className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+                   </>
+                 )}
+               </Button>
+             )}
 
             <p className="text-center text-sm text-muted-foreground mt-4">
               🔒 Secure checkout powered by Stripe

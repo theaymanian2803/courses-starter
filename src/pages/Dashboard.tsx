@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+ import { useSearchParams } from "react-router-dom";
 
 interface Lesson {
   id: string;
@@ -87,6 +88,7 @@ const demoModules: Module[] = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
+   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
@@ -97,6 +99,11 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+     // Check for payment success
+     if (searchParams.get("payment") === "success") {
+       toast.success("Payment successful! You now have full access to the course.");
+     }
+ 
     // Check auth and fetch data
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
