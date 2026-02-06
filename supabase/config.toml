@@ -1,7 +1,7 @@
 project_id = "adhqqxmmotczmeujnfzm"
- 
- [functions.create-checkout]
- verify_jwt = false
- 
- [functions.stripe-webhook]
- verify_jwt = false
+
+[functions.create-paypal-order]
+verify_jwt = false
+
+[functions.capture-paypal-order]
+verify_jwt = false
