@@ -6,7 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PAYPAL_API_URL = "https://api-m.paypal.com";
+// Use sandbox for testing, change to api-m.paypal.com for production
+const PAYPAL_API_URL = "https://api-m.sandbox.paypal.com";
 
 async function getPayPalAccessToken(): Promise<string> {
   const clientId = Deno.env.get("PAYPAL_CLIENT_ID");
@@ -15,6 +16,8 @@ async function getPayPalAccessToken(): Promise<string> {
   if (!clientId || !clientSecret) {
     throw new Error("PayPal credentials not configured");
   }
+
+  console.log("Authenticating with PayPal...", { clientIdPrefix: clientId.substring(0, 10) + "..." });
 
   const auth = btoa(`${clientId}:${clientSecret}`);
   const response = await fetch(`${PAYPAL_API_URL}/v1/oauth2/token`, {
@@ -26,7 +29,17 @@ async function getPayPalAccessToken(): Promise<string> {
     body: "grant_type=client_credentials",
   });
 
-  const data = await response.json();
+  const responseText = await response.text();
+  console.log("PayPal auth response status:", response.status);
+  
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    console.error("PayPal returned non-JSON response:", responseText.substring(0, 200));
+    throw new Error(`PayPal returned invalid response (status ${response.status}). Check if Client ID and Secret match the environment (sandbox vs production).`);
+  }
+  
   if (!response.ok) {
     throw new Error(`PayPal auth failed: ${JSON.stringify(data)}`);
   }
