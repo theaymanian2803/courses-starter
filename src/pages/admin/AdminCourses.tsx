@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type Course = {
   id: string;
@@ -189,14 +190,12 @@ export default function AdminCourses() {
                   required
                 />
               </div>
-              <div>
-                <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
-                <Input
-                  id="thumbnail_url"
-                  value={formData.thumbnail_url}
-                  onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                />
-              </div>
+              <ImageUpload
+                value={formData.thumbnail_url}
+                onChange={(url) => setFormData({ ...formData, thumbnail_url: url })}
+                bucket="course-thumbnails"
+                label="Thumbnail"
+              />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={resetForm}>
                   Cancel
