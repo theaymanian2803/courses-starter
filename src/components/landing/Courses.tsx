@@ -29,8 +29,8 @@ export function Courses() {
     },
   });
 
-  const handleEnroll = (courseId: string) => {
-    navigate("/auth");
+  const handleViewCourse = (courseId: string) => {
+    navigate(`/course/${courseId}`);
   };
 
   if (isLoading) {
@@ -140,11 +140,11 @@ export function Courses() {
 
               <CardFooter className="pt-0">
                 <Button
-                  onClick={() => handleEnroll(course.id)}
+                  onClick={() => handleViewCourse(course.id)}
                   className="w-full"
                   size="lg"
                 >
-                  Enroll Now
+                  View Course
                 </Button>
               </CardFooter>
             </Card>
