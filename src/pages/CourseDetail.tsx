@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { Footer } from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
 import {
   Accordion,
@@ -22,6 +23,7 @@ import {
   PlayCircle,
   Lock,
   CheckCircle,
+  CheckCircle2,
   ArrowLeft,
   Users,
 } from "lucide-react";
@@ -56,6 +58,34 @@ export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const [activePreviewLessonId, setActivePreviewLessonId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id ?? null);
+    };
+    getUser();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Check if user has purchased this course
+  const { data: hasPurchased } = useQuery({
+    queryKey: ["coursePurchase", courseId, userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("purchases")
+        .select("id")
+        .eq("user_id", userId!)
+        .eq("course_id", courseId!)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!userId && !!courseId,
+  });
 
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ["course", courseId],
@@ -100,6 +130,28 @@ export default function CourseDetail() {
     },
     enabled: !!modules && modules.length > 0,
   });
+
+  // Fetch lesson progress for enrolled users
+  const { data: lessonProgress } = useQuery({
+    queryKey: ["lessonProgress", courseId, userId],
+    queryFn: async () => {
+      if (!lessons || lessons.length === 0) return [];
+      const lessonIds = lessons.map((l) => l.id);
+      const { data } = await supabase
+        .from("lesson_progress")
+        .select("lesson_id, completed")
+        .eq("user_id", userId!)
+        .in("lesson_id", lessonIds);
+      return data || [];
+    },
+    enabled: !!userId && !!hasPurchased && !!lessons && lessons.length > 0,
+  });
+
+  const isLessonCompleted = (lessonId: string) => {
+    return lessonProgress?.some((p) => p.lesson_id === lessonId && p.completed) ?? false;
+  };
+
+  const completedCount = lessonProgress?.filter((p) => p.completed).length ?? 0;
 
   const getLessonsForModule = (moduleId: string) => {
     return lessons?.filter((l) => l.module_id === moduleId) || [];
@@ -274,19 +326,40 @@ export default function CourseDetail() {
                   </div>
                 )}
                 <CardContent className="p-6">
-                  <div className="text-3xl font-bold text-foreground mb-4">
-                    ${course.price}
-                  </div>
-                  <Button onClick={handleEnroll} className="w-full mb-4" size="lg" disabled={isEnrolling}>
-                    {isEnrolling ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      "Enroll Now"
-                    )}
-                  </Button>
+                  {hasPurchased ? (
+                    <>
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                        <span className="text-lg font-semibold text-foreground">Enrolled</span>
+                      </div>
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between mb-2 text-sm text-muted-foreground">
+                          <span>Progress</span>
+                          <span className="font-medium text-foreground">{completedCount}/{totalLessons}</span>
+                        </div>
+                        <Progress value={totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0} className="h-2" />
+                      </div>
+                      <Button onClick={() => navigate("/dashboard")} className="w-full mb-4" size="lg">
+                        Continue Learning
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-3xl font-bold text-foreground mb-4">
+                        ${course.price}
+                      </div>
+                      <Button onClick={handleEnroll} className="w-full mb-4" size="lg" disabled={isEnrolling}>
+                        {isEnrolling ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          "Enroll Now"
+                        )}
+                      </Button>
+                    </>
+                  )}
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-primary" />
@@ -334,7 +407,9 @@ export default function CourseDetail() {
                           {module.title}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {moduleLessons.length} lesson{moduleLessons.length !== 1 ? "s" : ""}
+                          {hasPurchased
+                            ? `${moduleLessons.filter((l) => isLessonCompleted(l.id)).length}/${moduleLessons.length} completed`
+                            : `${moduleLessons.length} lesson${moduleLessons.length !== 1 ? "s" : ""}`}
                         </p>
                       </div>
                     </div>
@@ -358,7 +433,11 @@ export default function CourseDetail() {
                             }}
                           >
                             <div className="flex items-center gap-3">
-                              <PlayCircle className={`h-4 w-4 ${lesson.is_free_preview ? "text-primary" : "text-muted-foreground"}`} />
+                              {hasPurchased && isLessonCompleted(lesson.id) ? (
+                                <CheckCircle2 className="h-4 w-4 text-primary" />
+                              ) : (
+                                <PlayCircle className={`h-4 w-4 ${lesson.is_free_preview ? "text-primary" : "text-muted-foreground"}`} />
+                              )}
                               <span className="text-foreground">{lesson.title}</span>
                               {lesson.is_free_preview && (
                                 <Badge variant="secondary" className="text-xs cursor-pointer">
