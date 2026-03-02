@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +23,7 @@ import {
   ArrowLeft,
   Users,
 } from "lucide-react";
+import { VideoPlayer } from "@/components/VideoPlayer";
 
 type Course = {
   id: string;
@@ -45,11 +47,13 @@ type Lesson = {
   is_free_preview: boolean;
   order_index: number;
   module_id: string;
+  youtube_video_id: string;
 };
 
 export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
+  const [activePreviewLessonId, setActivePreviewLessonId] = useState<string | null>(null);
 
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ["course", courseId],
@@ -294,25 +298,45 @@ export default function CourseDetail() {
                   <AccordionContent className="pb-4">
                     <ul className="space-y-2 ml-12">
                       {moduleLessons.map((lesson) => (
-                        <li
-                          key={lesson.id}
-                          className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <PlayCircle className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-foreground">{lesson.title}</span>
-                            {lesson.is_free_preview && (
-                              <Badge variant="secondary" className="text-xs">
-                                Free Preview
-                              </Badge>
-                            )}
+                        <li key={lesson.id} className="space-y-2">
+                          <div
+                            className={`flex items-center justify-between py-2 px-3 rounded-md transition-colors ${
+                              lesson.is_free_preview
+                                ? "cursor-pointer hover:bg-primary/10"
+                                : "hover:bg-muted/50"
+                            }`}
+                            onClick={() => {
+                              if (lesson.is_free_preview) {
+                                setActivePreviewLessonId(
+                                  activePreviewLessonId === lesson.id ? null : lesson.id
+                                );
+                              }
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <PlayCircle className={`h-4 w-4 ${lesson.is_free_preview ? "text-primary" : "text-muted-foreground"}`} />
+                              <span className="text-foreground">{lesson.title}</span>
+                              {lesson.is_free_preview && (
+                                <Badge variant="secondary" className="text-xs cursor-pointer">
+                                  Free Preview
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              {lesson.duration && <span>{lesson.duration}</span>}
+                              {!lesson.is_free_preview && (
+                                <Lock className="h-4 w-4" />
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            {lesson.duration && <span>{lesson.duration}</span>}
-                            {!lesson.is_free_preview && (
-                              <Lock className="h-4 w-4" />
-                            )}
-                          </div>
+                          {lesson.is_free_preview && activePreviewLessonId === lesson.id && (
+                            <div className="ml-0 mb-2">
+                              <VideoPlayer
+                                youtubeVideoId={lesson.youtube_video_id}
+                                title={lesson.title}
+                              />
+                            </div>
+                          )}
                         </li>
                       ))}
                     </ul>
