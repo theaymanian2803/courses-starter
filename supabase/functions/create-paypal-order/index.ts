@@ -6,7 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Use sandbox for testing, change to api-m.paypal.com for production
 const PAYPAL_API_URL = "https://api-m.sandbox.paypal.com";
 
 async function getPayPalAccessToken(): Promise<string> {
@@ -16,8 +15,6 @@ async function getPayPalAccessToken(): Promise<string> {
   if (!clientId || !clientSecret) {
     throw new Error("PayPal credentials not configured");
   }
-
-  console.log("Authenticating with PayPal...", { clientIdPrefix: clientId.substring(0, 10) + "..." });
 
   const auth = btoa(`${clientId}:${clientSecret}`);
   const response = await fetch(`${PAYPAL_API_URL}/v1/oauth2/token`, {
@@ -30,16 +27,13 @@ async function getPayPalAccessToken(): Promise<string> {
   });
 
   const responseText = await response.text();
-  console.log("PayPal auth response status:", response.status);
-  
   let data;
   try {
     data = JSON.parse(responseText);
   } catch {
-    console.error("PayPal returned non-JSON response:", responseText.substring(0, 200));
-    throw new Error(`PayPal returned invalid response (status ${response.status}). Check if Client ID and Secret match the environment (sandbox vs production).`);
+    throw new Error(`PayPal returned invalid response (status ${response.status}).`);
   }
-  
+
   if (!response.ok) {
     throw new Error(`PayPal auth failed: ${JSON.stringify(data)}`);
   }
@@ -65,7 +59,7 @@ serve(async (req) => {
 
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
-    
+
     if (userError || !user?.email) {
       throw new Error("User not authenticated or email not available");
     }
@@ -75,9 +69,19 @@ serve(async (req) => {
       throw new Error("Course ID is required");
     }
 
+    // Fetch the actual course price and title from the database
+    const { data: course, error: courseError } = await supabaseClient
+      .from("courses")
+      .select("title, price")
+      .eq("id", courseId)
+      .single();
+
+    if (courseError || !course) {
+      throw new Error("Course not found");
+    }
+
     const accessToken = await getPayPalAccessToken();
 
-    // Create PayPal order
     const orderResponse = await fetch(`${PAYPAL_API_URL}/v2/checkout/orders`, {
       method: "POST",
       headers: {
@@ -90,9 +94,9 @@ serve(async (req) => {
           {
             amount: {
               currency_code: "USD",
-              value: "199.00",
+              value: course.price.toFixed(2),
             },
-            description: "Fullstack MERN Masterclass - Lifetime Access",
+            description: `${course.title} - Lifetime Access`,
             custom_id: JSON.stringify({ user_id: user.id, course_id: courseId }),
           },
         ],
@@ -100,8 +104,8 @@ serve(async (req) => {
           brand_name: "Unc Code Academy",
           landing_page: "BILLING",
           user_action: "PAY_NOW",
-          return_url: returnUrl || `${req.headers.get("origin")}/dashboard?payment=success`,
-          cancel_url: cancelUrl || `${req.headers.get("origin")}/#pricing`,
+          return_url: returnUrl || `${req.headers.get("origin")}/payment-success`,
+          cancel_url: cancelUrl || `${req.headers.get("origin")}/course/${courseId}`,
         },
       }),
     });
@@ -111,15 +115,14 @@ serve(async (req) => {
       throw new Error(`PayPal order creation failed: ${JSON.stringify(orderData)}`);
     }
 
-    // Find the approval URL
     const approvalLink = orderData.links?.find((link: { rel: string }) => link.rel === "approve");
     if (!approvalLink) {
       throw new Error("No approval URL found in PayPal response");
     }
 
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       orderId: orderData.id,
-      approvalUrl: approvalLink.href 
+      approvalUrl: approvalLink.href,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

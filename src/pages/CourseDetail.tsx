@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -123,8 +125,43 @@ export default function CourseDetail() {
     return `${minutes} min`;
   };
 
-  const handleEnroll = () => {
-    navigate("/auth");
+  const [isEnrolling, setIsEnrolling] = useState(false);
+
+  const handleEnroll = async () => {
+    try {
+      setIsEnrolling(true);
+
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please sign in to purchase this course.");
+        navigate("/auth");
+        return;
+      }
+
+      // Call the create-paypal-order edge function
+      const { data, error } = await supabase.functions.invoke("create-paypal-order", {
+        body: {
+          courseId,
+          returnUrl: `${window.location.origin}/payment-success`,
+          cancelUrl: `${window.location.origin}/course/${courseId}`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.approvalUrl) {
+        // Redirect to PayPal checkout
+        window.location.href = data.approvalUrl;
+      } else {
+        throw new Error("No approval URL received");
+      }
+    } catch (err: any) {
+      console.error("Enrollment error:", err);
+      toast.error(err.message || "Failed to start checkout. Please try again.");
+    } finally {
+      setIsEnrolling(false);
+    }
   };
 
   if (courseLoading || modulesLoading) {
@@ -240,8 +277,15 @@ export default function CourseDetail() {
                   <div className="text-3xl font-bold text-foreground mb-4">
                     ${course.price}
                   </div>
-                  <Button onClick={handleEnroll} className="w-full mb-4" size="lg">
-                    Enroll Now
+                  <Button onClick={handleEnroll} className="w-full mb-4" size="lg" disabled={isEnrolling}>
+                    {isEnrolling ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      "Enroll Now"
+                    )}
                   </Button>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center gap-2">
