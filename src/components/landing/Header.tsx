@@ -41,12 +41,12 @@ export const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
-            <a
-              href="#curriculum"
+            <Link
+              to="/courses"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Curriculum
-            </a>
+              Courses
+            </Link>
             <a
               href="#pricing"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -79,13 +79,13 @@ export const Header = () => {
             className="md:hidden pt-4 pb-2"
           >
             <nav className="flex flex-col gap-4">
-              <a
-                href="#curriculum"
+              <Link
+                to="/courses"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-muted-foreground hover:text-foreground transition-colors py-2"
               >
-                Curriculum
-              </a>
+                Courses
+              </Link>
               <a
                 href="#pricing"
                 onClick={() => setIsMobileMenuOpen(false)}
