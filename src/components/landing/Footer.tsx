@@ -18,9 +18,9 @@ export const Footer = () => {
 
           {/* Links */}
           <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <a href="#curriculum" className="hover:text-foreground transition-colors">
-              Curriculum
-            </a>
+            <Link to="/courses" className="hover:text-foreground transition-colors">
+              Courses
+            </Link>
             <a href="#pricing" className="hover:text-foreground transition-colors">
               Pricing
             </a>
