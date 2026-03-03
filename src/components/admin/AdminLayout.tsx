@@ -24,9 +24,13 @@ import {
   Users, 
   LogOut,
   Loader2,
-  ShieldX
+  ShieldX,
+  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+const ADMIN_ACCESS_CODE = "011235@Admin";
 
 const adminNavItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
@@ -84,27 +88,75 @@ function AdminSidebar() {
 
 export function AdminLayout() {
   const navigate = useNavigate();
-  const { isAdmin, isLoading, userId } = useAdmin();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { isAdmin, isLoading } = useAdmin();
+  const [codeVerified, setCodeVerified] = useState(false);
+  const [codeInput, setCodeInput] = useState("");
+  const [codeError, setCodeError] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
-      setIsCheckingAuth(false);
-    };
-    checkAuth();
-  }, [navigate]);
+    const stored = sessionStorage.getItem("admin_code_verified");
+    if (stored === "true") {
+      setCodeVerified(true);
+    }
+  }, []);
+
+  const handleCodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (codeInput === ADMIN_ACCESS_CODE) {
+      setCodeVerified(true);
+      setCodeError(false);
+      sessionStorage.setItem("admin_code_verified", "true");
+    } else {
+      setCodeError(true);
+    }
+  };
 
   const handleLogout = async () => {
+    sessionStorage.removeItem("admin_code_verified");
     await supabase.auth.signOut();
     navigate("/");
   };
 
-  if (isCheckingAuth || isLoading) {
+  // Show code entry screen first
+  if (!codeVerified) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center max-w-sm px-4">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Lock className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Admin Access</h1>
+          <p className="text-muted-foreground mb-6">
+            Enter the admin access code to continue.
+          </p>
+          <form onSubmit={handleCodeSubmit} className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Enter access code"
+              value={codeInput}
+              onChange={(e) => {
+                setCodeInput(e.target.value);
+                setCodeError(false);
+              }}
+              className={codeError ? "border-destructive" : ""}
+              autoFocus
+            />
+            {codeError && (
+              <p className="text-sm text-destructive">Incorrect access code.</p>
+            )}
+            <Button type="submit" className="w-full">
+              Verify
+            </Button>
+          </form>
+          <Button variant="ghost" size="sm" className="mt-4" onClick={() => navigate("/")}>
+            Back to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
