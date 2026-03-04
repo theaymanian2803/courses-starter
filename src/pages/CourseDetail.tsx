@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, Tag } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -59,6 +60,10 @@ export default function CourseDetail() {
   const navigate = useNavigate();
   const [activePreviewLessonId, setActivePreviewLessonId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percent: number } | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
 
   useEffect(() => {
     const getUser = async () => {
@@ -176,6 +181,52 @@ export default function CourseDetail() {
     }
     return `${minutes} min`;
   };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+    try {
+      const { data, error } = await supabase
+        .from("coupons")
+        .select("code, discount_percent, is_active, max_uses, current_uses, expires_at")
+        .eq("code", couponCode.toUpperCase().trim())
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        setCouponError("Invalid coupon code.");
+        setAppliedCoupon(null);
+        return;
+      }
+      if (!data.is_active) {
+        setCouponError("This coupon is no longer active.");
+        setAppliedCoupon(null);
+        return;
+      }
+      if (data.max_uses && data.current_uses >= data.max_uses) {
+        setCouponError("This coupon has reached its usage limit.");
+        setAppliedCoupon(null);
+        return;
+      }
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        setCouponError("This coupon has expired.");
+        setAppliedCoupon(null);
+        return;
+      }
+      setAppliedCoupon({ code: data.code, discount_percent: data.discount_percent });
+      setCouponError("");
+      toast.success(`Coupon applied! ${data.discount_percent}% off`);
+    } catch {
+      setCouponError("Failed to validate coupon.");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const discountedPrice = appliedCoupon && course
+    ? course.price * (1 - appliedCoupon.discount_percent / 100)
+    : null;
 
   const [isEnrolling, setIsEnrolling] = useState(false);
 
@@ -345,9 +396,69 @@ export default function CourseDetail() {
                     </>
                   ) : (
                     <>
-                      <div className="text-3xl font-bold text-foreground mb-4">
-                        ${course.price}
+                      <div className="mb-2">
+                        {appliedCoupon ? (
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-foreground">
+                              ${discountedPrice?.toFixed(2)}
+                            </span>
+                            <span className="text-lg text-muted-foreground line-through">
+                              ${course.price}
+                            </span>
+                            <Badge variant="secondary" className="text-xs">
+                              -{appliedCoupon.discount_percent}%
+                            </Badge>
+                          </div>
+                        ) : (
+                          <div className="text-3xl font-bold text-foreground">
+                            ${course.price}
+                          </div>
+                        )}
                       </div>
+
+                      {/* Coupon Input */}
+                      <div className="mb-4 space-y-2">
+                        <div className="flex gap-2">
+                          <div className="relative flex-1">
+                            <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              placeholder="Coupon code"
+                              value={couponCode}
+                              onChange={(e) => {
+                                setCouponCode(e.target.value);
+                                setCouponError("");
+                              }}
+                              className="pl-9"
+                              disabled={!!appliedCoupon}
+                            />
+                          </div>
+                          {appliedCoupon ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setAppliedCoupon(null);
+                                setCouponCode("");
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleApplyCoupon}
+                              disabled={couponLoading || !couponCode.trim()}
+                            >
+                              {couponLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+                            </Button>
+                          )}
+                        </div>
+                        {couponError && (
+                          <p className="text-xs text-destructive">{couponError}</p>
+                        )}
+                      </div>
+
                       <Button onClick={handleEnroll} className="w-full mb-4" size="lg" disabled={isEnrolling}>
                         {isEnrolling ? (
                           <>
