@@ -4,19 +4,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { PostPurchaseUpsell } from "@/components/checkout/PostPurchaseUpsell";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showUpsell, setShowUpsell] = useState(false);
 
   useEffect(() => {
     const capturePayment = async () => {
-      const token = searchParams.get("token"); // PayPal order ID
+      const token = searchParams.get("token");
       if (!token) {
         setStatus("error");
         return;
       }
+
+      // Get user ID
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id ?? null);
 
       try {
         const { data, error } = await supabase.functions.invoke("capture-paypal-order", {
@@ -28,6 +35,10 @@ export default function PaymentSuccess() {
         if (data?.success) {
           setStatus("success");
           toast.success("Payment successful! You now have full course access.");
+          // Show upsell modal after successful payment
+          if (session?.user?.id) {
+            setShowUpsell(true);
+          }
         } else {
           throw new Error(data?.error || "Payment capture failed");
         }
@@ -78,6 +89,15 @@ export default function PaymentSuccess() {
           </>
         )}
       </div>
+
+      {/* Post-Purchase Upsell Modal */}
+      {userId && (
+        <PostPurchaseUpsell
+          open={showUpsell}
+          onClose={() => setShowUpsell(false)}
+          userId={userId}
+        />
+      )}
     </div>
   );
 }

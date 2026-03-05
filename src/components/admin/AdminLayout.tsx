@@ -26,7 +26,10 @@ import {
   Loader2,
   ShieldX,
   Lock,
-  Tag
+  Tag,
+  Package,
+  Sparkles,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +41,9 @@ const adminNavItems = [
   { title: "Courses", url: "/admin/courses", icon: BookOpen },
   { title: "Modules", url: "/admin/modules", icon: Layers },
   { title: "Lessons", url: "/admin/lessons", icon: PlayCircle },
+  { title: "Bundles", url: "/admin/bundles", icon: Package },
+  { title: "Upsells", url: "/admin/upsells", icon: Sparkles },
+  { title: "Tiers", url: "/admin/tiers", icon: Crown },
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
 ];

@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      bundle_courses: {
+        Row: {
+          bundle_id: string
+          course_id: string
+          id: string
+        }
+        Insert: {
+          bundle_id: string
+          course_id: string
+          id?: string
+        }
+        Update: {
+          bundle_id?: string
+          course_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bundle_courses_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bundle_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bundles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          price: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          price?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          price?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
@@ -238,6 +301,137 @@ export type Database = {
           },
         ]
       }
+      subscription_tiers: {
+        Row: {
+          created_at: string
+          description: string | null
+          features: Json
+          id: string
+          is_active: boolean
+          monthly_price: number
+          name: string
+          slug: string
+          sort_order: number
+          yearly_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          monthly_price?: number
+          name: string
+          slug: string
+          sort_order?: number
+          yearly_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          monthly_price?: number
+          name?: string
+          slug?: string
+          sort_order?: number
+          yearly_price?: number
+        }
+        Relationships: []
+      }
+      tier_courses: {
+        Row: {
+          course_id: string
+          id: string
+          tier_id: string
+        }
+        Insert: {
+          course_id: string
+          id?: string
+          tier_id: string
+        }
+        Update: {
+          course_id?: string
+          id?: string
+          tier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tier_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tier_courses_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      upsell_offers: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          offer_type: string
+          price: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          offer_type?: string
+          price?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          offer_type?: string
+          price?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      upsell_purchases: {
+        Row: {
+          id: string
+          purchased_at: string
+          upsell_offer_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          purchased_at?: string
+          upsell_offer_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          purchased_at?: string
+          upsell_offer_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "upsell_purchases_upsell_offer_id_fkey"
+            columns: ["upsell_offer_id"]
+            isOneToOne: false
+            referencedRelation: "upsell_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -258,6 +452,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          billing_cycle: string
+          created_at: string
+          ends_at: string | null
+          id: string
+          starts_at: string
+          status: string
+          tier_id: string
+          user_id: string
+        }
+        Insert: {
+          billing_cycle?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          starts_at?: string
+          status?: string
+          tier_id: string
+          user_id: string
+        }
+        Update: {
+          billing_cycle?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          starts_at?: string
+          status?: string
+          tier_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
