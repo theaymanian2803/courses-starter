@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Loader2, Tag } from "lucide-react";
+import { OrderBump } from "@/components/checkout/OrderBump";
 import {
   Accordion,
   AccordionContent,
@@ -229,6 +230,22 @@ export default function CourseDetail() {
     : null;
 
   const [isEnrolling, setIsEnrolling] = useState(false);
+  const [selectedBumps, setSelectedBumps] = useState<string[]>([]);
+  const [bumpTotal, setBumpTotal] = useState(0);
+
+  const handleToggleBump = (offerId: string, price: number) => {
+    setSelectedBumps(prev => {
+      if (prev.includes(offerId)) {
+        setBumpTotal(bt => bt - price);
+        return prev.filter(id => id !== offerId);
+      } else {
+        setBumpTotal(bt => bt + price);
+        return [...prev, offerId];
+      }
+    });
+  };
+
+  const finalPrice = (discountedPrice ?? course?.price ?? 0) + bumpTotal;
 
   const handleEnroll = async () => {
     try {
@@ -459,6 +476,19 @@ export default function CourseDetail() {
                         )}
                       </div>
 
+                      {/* Order Bump */}
+                      <OrderBump
+                        selectedOfferIds={selectedBumps}
+                        onToggle={handleToggleBump}
+                      />
+
+                      {/* Total */}
+                      {bumpTotal > 0 && (
+                        <div className="text-center text-sm text-muted-foreground border-t border-border pt-3">
+                          Total: <span className="text-foreground font-bold">${finalPrice.toFixed(2)}</span>
+                        </div>
+                      )}
+
                       <Button onClick={handleEnroll} className="w-full mb-4" size="lg" disabled={isEnrolling}>
                         {isEnrolling ? (
                           <>
@@ -466,7 +496,7 @@ export default function CourseDetail() {
                             Processing...
                           </>
                         ) : (
-                          "Enroll Now"
+                          `Enroll Now — $${finalPrice.toFixed(2)}`
                         )}
                       </Button>
                     </>

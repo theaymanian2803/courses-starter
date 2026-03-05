@@ -17,6 +17,9 @@ import AdminModules from "./pages/admin/AdminModules";
 import AdminLessons from "./pages/admin/AdminLessons";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminCoupons from "./pages/admin/AdminCoupons";
+import AdminBundles from "./pages/admin/AdminBundles";
+import AdminUpsells from "./pages/admin/AdminUpsells";
+import AdminTiers from "./pages/admin/AdminTiers";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +43,9 @@ const App = () => (
             <Route path="courses" element={<AdminCourses />} />
             <Route path="modules" element={<AdminModules />} />
             <Route path="lessons" element={<AdminLessons />} />
+            <Route path="bundles" element={<AdminBundles />} />
+            <Route path="upsells" element={<AdminUpsells />} />
+            <Route path="tiers" element={<AdminTiers />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="coupons" element={<AdminCoupons />} />
           </Route>

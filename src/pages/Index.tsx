@@ -2,6 +2,7 @@ import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
 import { FeaturedCourses } from "@/components/landing/FeaturedCourses";
 import { Pricing } from "@/components/landing/Pricing";
+import { SubscriptionPricing } from "@/components/landing/SubscriptionPricing";
 import { Footer } from "@/components/landing/Footer";
 
 const Index = () => {
@@ -11,6 +12,7 @@ const Index = () => {
       <Hero />
       <FeaturedCourses />
       <Pricing />
+      <SubscriptionPricing />
       <Footer />
     </div>
   );
