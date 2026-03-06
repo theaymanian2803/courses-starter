@@ -263,6 +263,8 @@ export default function CourseDetail() {
       const { data, error } = await supabase.functions.invoke("create-paypal-order", {
         body: {
           courseId,
+          couponCode: appliedCoupon?.code || null,
+          bumpOfferIds: selectedBumps.length > 0 ? selectedBumps : [],
           returnUrl: `${window.location.origin}/payment-success`,
           cancelUrl: `${window.location.origin}/course/${courseId}`,
         },
