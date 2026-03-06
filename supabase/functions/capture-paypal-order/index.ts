@@ -6,32 +6,92 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PAYPAL_API_URL = "https://api-m.sandbox.paypal.com";
+const PAYPAL_BASES = ["https://api-m.sandbox.paypal.com", "https://api-m.paypal.com"];
 
-async function getPayPalAccessToken(): Promise<string> {
-  const clientId = Deno.env.get("PAYPAL_CLIENT_ID");
-  const clientSecret = Deno.env.get("PAYPAL_CLIENT_SECRET");
+function getPayPalApiBases(): string[] {
+  const configuredBase = Deno.env.get("PAYPAL_API_BASE_URL")?.trim();
+  const allBases = [configuredBase, ...PAYPAL_BASES]
+    .filter((base): base is string => Boolean(base))
+    .map((base) => base.replace(/\/+$/, ""));
+
+  return [...new Set(allBases)];
+}
+
+async function requestPayPalAccessToken(apiBase: string, clientId: string, clientSecret: string): Promise<string> {
+  const auth = btoa(`${clientId}:${clientSecret}`);
+  const response = await fetch(`${apiBase}/v1/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json",
+      "Accept-Language": "en_US",
+    },
+    body: new URLSearchParams({ grant_type: "client_credentials" }).toString(),
+  });
+
+  const responseText = await response.text();
+  let parsed: Record<string, unknown> | null = null;
+
+  try {
+    parsed = responseText ? JSON.parse(responseText) : null;
+  } catch {
+    parsed = null;
+  }
+
+  if (!response.ok || !parsed || typeof parsed.access_token !== "string") {
+    const detail = parsed ? JSON.stringify(parsed) : (responseText || "empty response");
+    throw new Error(`status ${response.status}: ${detail.slice(0, 300)}`);
+  }
+
+  return parsed.access_token;
+}
+
+async function capturePayPalOrder(orderId: string) {
+  const clientId = Deno.env.get("PAYPAL_CLIENT_ID")?.trim();
+  const clientSecret = Deno.env.get("PAYPAL_CLIENT_SECRET")?.trim();
 
   if (!clientId || !clientSecret) {
     throw new Error("PayPal credentials not configured");
   }
 
-  const auth = btoa(`${clientId}:${clientSecret}`);
-  const response = await fetch(`${PAYPAL_API_URL}/v1/oauth2/token`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Basic ${auth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: "grant_type=client_credentials",
-  });
+  const errors: string[] = [];
 
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(`PayPal auth failed: ${JSON.stringify(data)}`);
+  for (const apiBase of getPayPalApiBases()) {
+    try {
+      const accessToken = await requestPayPalAccessToken(apiBase, clientId, clientSecret);
+
+      const captureResponse = await fetch(`${apiBase}/v2/checkout/orders/${orderId}/capture`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const responseText = await captureResponse.text();
+      let captureData: Record<string, unknown> | null = null;
+
+      try {
+        captureData = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        captureData = null;
+      }
+
+      if (!captureResponse.ok || !captureData) {
+        const detail = captureData ? JSON.stringify(captureData) : (responseText || "empty response");
+        errors.push(`${apiBase} -> status ${captureResponse.status}: ${detail.slice(0, 300)}`);
+        continue;
+      }
+
+      return captureData;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(`${apiBase} -> ${message}`);
+    }
   }
 
-  return data.access_token;
+  throw new Error(`PayPal capture failed in all environments: ${errors.join(" | ")}`);
 }
 
 serve(async (req) => {
@@ -50,44 +110,30 @@ serve(async (req) => {
       throw new Error("Order ID is required");
     }
 
-    const accessToken = await getPayPalAccessToken();
-
-    // Capture the PayPal order
-    const captureResponse = await fetch(`${PAYPAL_API_URL}/v2/checkout/orders/${orderId}/capture`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    const captureData = await captureResponse.json();
-    if (!captureResponse.ok) {
-      console.error("PayPal capture failed:", JSON.stringify(captureData));
-      throw new Error(`PayPal capture failed: ${captureData.message || JSON.stringify(captureData)}`);
-    }
+    const captureData = await capturePayPalOrder(orderId);
 
     if (captureData.status === "COMPLETED") {
-      const purchaseUnit = captureData.purchase_units?.[0];
-      const payments = purchaseUnit?.payments?.captures?.[0];
-      
+      const purchaseUnit = (captureData.purchase_units as Array<Record<string, unknown>>)?.[0];
+      const payments = (purchaseUnit?.payments as Record<string, unknown>)?.captures as Array<Record<string, unknown>> | undefined;
+      const firstPayment = payments?.[0];
+
       let userId: string | null = null;
       let courseId: string | null = null;
       let couponCode: string | null = null;
       let bumpOfferIds: string[] = [];
-      
+
       try {
-        const customData = JSON.parse(purchaseUnit?.custom_id || "{}");
-        userId = customData.user_id;
-        courseId = customData.course_id;
-        couponCode = customData.coupon_code;
-        bumpOfferIds = customData.bump_offer_ids || [];
+        const customIdRaw = purchaseUnit?.custom_id;
+        const customData = JSON.parse(typeof customIdRaw === "string" ? customIdRaw : "{}");
+        userId = customData.user_id ?? null;
+        courseId = customData.course_id ?? null;
+        couponCode = customData.coupon_code ?? null;
+        bumpOfferIds = Array.isArray(customData.bump_offer_ids) ? customData.bump_offer_ids : [];
       } catch {
         console.error("Failed to parse custom_id");
       }
 
       if (userId && courseId) {
-        // Grant course access
         const { error: purchaseError } = await supabaseAdmin
           .from("purchases")
           .insert({
@@ -99,7 +145,6 @@ serve(async (req) => {
           console.error("Failed to insert purchase:", purchaseError);
         }
 
-        // Record bump purchases
         if (bumpOfferIds.length > 0) {
           const bumpInserts = bumpOfferIds.map((offerId: string) => ({
             user_id: userId!,
@@ -113,7 +158,6 @@ serve(async (req) => {
           }
         }
 
-        // Increment coupon usage
         if (couponCode) {
           await supabaseAdmin.rpc("increment_coupon_usage", { _code: couponCode }).catch((err: Error) => {
             console.error("Failed to increment coupon usage:", err);
@@ -121,17 +165,17 @@ serve(async (req) => {
         }
       }
 
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         success: true,
         status: captureData.status,
-        transactionId: payments?.id,
+        transactionId: firstPayment?.id,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
 
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: false,
       status: captureData.status,
     }), {
