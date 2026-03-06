@@ -46,10 +46,9 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -57,6 +56,8 @@ serve(async (req) => {
       throw new Error("No authorization header");
     }
 
+    // Use anon client with user token for auth
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
 
@@ -64,13 +65,16 @@ serve(async (req) => {
       throw new Error("User not authenticated or email not available");
     }
 
-    const { courseId, returnUrl, cancelUrl } = await req.json();
+    const { courseId, couponCode, bumpOfferIds, returnUrl, cancelUrl } = await req.json();
     if (!courseId) {
       throw new Error("Course ID is required");
     }
 
-    // Fetch the actual course price and title from the database
-    const { data: course, error: courseError } = await supabaseClient
+    // Use service role client for DB reads (bypasses RLS cleanly)
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Fetch the course
+    const { data: course, error: courseError } = await supabaseAdmin
       .from("courses")
       .select("title, price")
       .eq("id", courseId)
@@ -78,6 +82,49 @@ serve(async (req) => {
 
     if (courseError || !course) {
       throw new Error("Course not found");
+    }
+
+    let finalPrice = course.price;
+    let description = `${course.title} - Lifetime Access`;
+
+    // Validate and apply coupon if provided
+    if (couponCode) {
+      const { data: coupon } = await supabaseAdmin
+        .from("coupons")
+        .select("*")
+        .eq("code", couponCode.toUpperCase().trim())
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (coupon) {
+        const notExpired = !coupon.expires_at || new Date(coupon.expires_at) > new Date();
+        const notMaxed = !coupon.max_uses || coupon.current_uses < coupon.max_uses;
+        if (notExpired && notMaxed) {
+          finalPrice = Math.round(finalPrice * (1 - coupon.discount_percent / 100) * 100) / 100;
+          description += ` (${coupon.discount_percent}% off with ${coupon.code})`;
+        }
+      }
+    }
+
+    // Add order bump prices if any
+    if (bumpOfferIds && Array.isArray(bumpOfferIds) && bumpOfferIds.length > 0) {
+      const { data: bumps } = await supabaseAdmin
+        .from("upsell_offers")
+        .select("id, title, price")
+        .in("id", bumpOfferIds)
+        .eq("is_active", true)
+        .eq("offer_type", "order_bump");
+
+      if (bumps && bumps.length > 0) {
+        const bumpTotal = bumps.reduce((sum: number, b: { price: number }) => sum + b.price, 0);
+        finalPrice = Math.round((finalPrice + bumpTotal) * 100) / 100;
+        const bumpNames = bumps.map((b: { title: string }) => b.title).join(", ");
+        description += ` + ${bumpNames}`;
+      }
+    }
+
+    if (finalPrice <= 0) {
+      throw new Error("Invalid total price");
     }
 
     const accessToken = await getPayPalAccessToken();
@@ -94,10 +141,15 @@ serve(async (req) => {
           {
             amount: {
               currency_code: "USD",
-              value: course.price.toFixed(2),
+              value: finalPrice.toFixed(2),
             },
-            description: `${course.title} - Lifetime Access`,
-            custom_id: JSON.stringify({ user_id: user.id, course_id: courseId }),
+            description: description.substring(0, 127),
+            custom_id: JSON.stringify({
+              user_id: user.id,
+              course_id: courseId,
+              coupon_code: couponCode || null,
+              bump_offer_ids: bumpOfferIds || [],
+            }),
           },
         ],
         application_context: {
@@ -112,7 +164,8 @@ serve(async (req) => {
 
     const orderData = await orderResponse.json();
     if (!orderResponse.ok) {
-      throw new Error(`PayPal order creation failed: ${JSON.stringify(orderData)}`);
+      console.error("PayPal order creation failed:", JSON.stringify(orderData));
+      throw new Error(`PayPal order creation failed: ${orderData.message || JSON.stringify(orderData)}`);
     }
 
     const approvalLink = orderData.links?.find((link: { rel: string }) => link.rel === "approve");

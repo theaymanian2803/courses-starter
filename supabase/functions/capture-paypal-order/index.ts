@@ -6,7 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Use sandbox for testing, change to api-m.paypal.com for production
 const PAYPAL_API_URL = "https://api-m.sandbox.paypal.com";
 
 async function getPayPalAccessToken(): Promise<string> {
@@ -64,21 +63,25 @@ serve(async (req) => {
 
     const captureData = await captureResponse.json();
     if (!captureResponse.ok) {
-      throw new Error(`PayPal capture failed: ${JSON.stringify(captureData)}`);
+      console.error("PayPal capture failed:", JSON.stringify(captureData));
+      throw new Error(`PayPal capture failed: ${captureData.message || JSON.stringify(captureData)}`);
     }
 
     if (captureData.status === "COMPLETED") {
-      // Extract user and course info from custom_id
       const purchaseUnit = captureData.purchase_units?.[0];
       const payments = purchaseUnit?.payments?.captures?.[0];
       
       let userId: string | null = null;
       let courseId: string | null = null;
+      let couponCode: string | null = null;
+      let bumpOfferIds: string[] = [];
       
       try {
         const customData = JSON.parse(purchaseUnit?.custom_id || "{}");
         userId = customData.user_id;
         courseId = customData.course_id;
+        couponCode = customData.coupon_code;
+        bumpOfferIds = customData.bump_offer_ids || [];
       } catch {
         console.error("Failed to parse custom_id");
       }
@@ -94,6 +97,27 @@ serve(async (req) => {
 
         if (purchaseError) {
           console.error("Failed to insert purchase:", purchaseError);
+        }
+
+        // Record bump purchases
+        if (bumpOfferIds.length > 0) {
+          const bumpInserts = bumpOfferIds.map((offerId: string) => ({
+            user_id: userId!,
+            upsell_offer_id: offerId,
+          }));
+          const { error: bumpError } = await supabaseAdmin
+            .from("upsell_purchases")
+            .insert(bumpInserts);
+          if (bumpError) {
+            console.error("Failed to insert bump purchases:", bumpError);
+          }
+        }
+
+        // Increment coupon usage
+        if (couponCode) {
+          await supabaseAdmin.rpc("increment_coupon_usage", { _code: couponCode }).catch((err: Error) => {
+            console.error("Failed to increment coupon usage:", err);
+          });
         }
       }
 
