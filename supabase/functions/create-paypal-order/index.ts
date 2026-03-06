@@ -6,39 +6,73 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PAYPAL_API_URL = "https://api-m.sandbox.paypal.com";
+const PAYPAL_BASES = ["https://api-m.sandbox.paypal.com", "https://api-m.paypal.com"];
 
-async function getPayPalAccessToken(): Promise<string> {
-  const clientId = Deno.env.get("PAYPAL_CLIENT_ID");
-  const clientSecret = Deno.env.get("PAYPAL_CLIENT_SECRET");
+type PayPalTokenResult = {
+  accessToken: string;
+  apiBase: string;
+};
+
+function getPayPalApiBases(): string[] {
+  const configuredBase = Deno.env.get("PAYPAL_API_BASE_URL")?.trim();
+  const allBases = [configuredBase, ...PAYPAL_BASES]
+    .filter((base): base is string => Boolean(base))
+    .map((base) => base.replace(/\/+$/, ""));
+
+  return [...new Set(allBases)];
+}
+
+async function requestPayPalAccessToken(apiBase: string, clientId: string, clientSecret: string): Promise<string> {
+  const auth = btoa(`${clientId}:${clientSecret}`);
+  const response = await fetch(`${apiBase}/v1/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json",
+      "Accept-Language": "en_US",
+    },
+    body: new URLSearchParams({ grant_type: "client_credentials" }).toString(),
+  });
+
+  const responseText = await response.text();
+  let parsed: Record<string, unknown> | null = null;
+
+  try {
+    parsed = responseText ? JSON.parse(responseText) : null;
+  } catch {
+    parsed = null;
+  }
+
+  if (!response.ok || !parsed || typeof parsed.access_token !== "string") {
+    const detail = parsed ? JSON.stringify(parsed) : (responseText || "empty response");
+    throw new Error(`status ${response.status}: ${detail.slice(0, 300)}`);
+  }
+
+  return parsed.access_token;
+}
+
+async function getPayPalAccessToken(): Promise<PayPalTokenResult> {
+  const clientId = Deno.env.get("PAYPAL_CLIENT_ID")?.trim();
+  const clientSecret = Deno.env.get("PAYPAL_CLIENT_SECRET")?.trim();
 
   if (!clientId || !clientSecret) {
     throw new Error("PayPal credentials not configured");
   }
 
-  const auth = btoa(`${clientId}:${clientSecret}`);
-  const response = await fetch(`${PAYPAL_API_URL}/v1/oauth2/token`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Basic ${auth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: "grant_type=client_credentials",
-  });
+  const errors: string[] = [];
 
-  const responseText = await response.text();
-  let data;
-  try {
-    data = JSON.parse(responseText);
-  } catch {
-    throw new Error(`PayPal returned invalid response (status ${response.status}).`);
+  for (const apiBase of getPayPalApiBases()) {
+    try {
+      const accessToken = await requestPayPalAccessToken(apiBase, clientId, clientSecret);
+      return { accessToken, apiBase };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(`${apiBase} -> ${message}`);
+    }
   }
 
-  if (!response.ok) {
-    throw new Error(`PayPal auth failed: ${JSON.stringify(data)}`);
-  }
-
-  return data.access_token;
+  throw new Error(`PayPal auth failed in all environments: ${errors.join(" | ")}`);
 }
 
 serve(async (req) => {
@@ -116,9 +150,9 @@ serve(async (req) => {
         .eq("offer_type", "order_bump");
 
       if (bumps && bumps.length > 0) {
-        const bumpTotal = bumps.reduce((sum: number, b: { price: number }) => sum + b.price, 0);
+        const bumpTotal = bumps.reduce((sum: number, bump: { price: number }) => sum + bump.price, 0);
         finalPrice = Math.round((finalPrice + bumpTotal) * 100) / 100;
-        const bumpNames = bumps.map((b: { title: string }) => b.title).join(", ");
+        const bumpNames = bumps.map((bump: { title: string }) => bump.title).join(", ");
         description += ` + ${bumpNames}`;
       }
     }
@@ -127,9 +161,9 @@ serve(async (req) => {
       throw new Error("Invalid total price");
     }
 
-    const accessToken = await getPayPalAccessToken();
+    const { accessToken, apiBase } = await getPayPalAccessToken();
 
-    const orderResponse = await fetch(`${PAYPAL_API_URL}/v2/checkout/orders`, {
+    const orderResponse = await fetch(`${apiBase}/v2/checkout/orders`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${accessToken}`,
