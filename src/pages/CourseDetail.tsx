@@ -66,6 +66,8 @@ export default function CourseDetail() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percent: number } | null>(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
+  const [clickedLessonTitle, setClickedLessonTitle] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const getUser = async () => {
