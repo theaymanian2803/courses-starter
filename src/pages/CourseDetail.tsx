@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Loader2, Tag } from "lucide-react";
 import { OrderBump } from "@/components/checkout/OrderBump";
+import { EnrollModal } from "@/components/checkout/EnrollModal";
 import {
   Accordion,
   AccordionContent,
