@@ -96,7 +96,7 @@ function AdminSidebar() {
 
 export function AdminLayout() {
   const navigate = useNavigate();
-  const { isAdmin, isLoading } = useAdmin();
+  const { isAdmin, isLoading, userId } = useAdmin();
   const [codeVerified, setCodeVerified] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [codeError, setCodeError] = useState(false);
@@ -117,6 +117,13 @@ export function AdminLayout() {
     } else {
       setCodeError(true);
     }
+  };
+
+  const handleResetCode = () => {
+    sessionStorage.removeItem("admin_code_verified");
+    setCodeVerified(false);
+    setCodeInput("");
+    setCodeError(false);
   };
 
   const handleLogout = async () => {
@@ -175,6 +182,31 @@ export function AdminLayout() {
     );
   }
 
+  // Not logged in — prompt to sign in
+  if (!userId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center max-w-md px-4">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Lock className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Sign In Required</h1>
+          <p className="text-muted-foreground mb-6">
+            Please sign in with an admin account to access this area.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => navigate("/auth")}>
+              Sign In
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/")}>
+              Back to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -184,11 +216,11 @@ export function AdminLayout() {
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
           <p className="text-muted-foreground mb-6">
-            You don't have administrator privileges to access this area.
+            You don't have administrator privileges. Sign in with an admin account or re-enter the access code.
           </p>
           <div className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => navigate("/dashboard")}>
-              Go to Dashboard
+            <Button variant="outline" onClick={handleResetCode}>
+              Re-enter Code
             </Button>
             <Button onClick={() => navigate("/")}>
               Back to Home
