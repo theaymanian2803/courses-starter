@@ -34,7 +34,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const ADMIN_ACCESS_CODE = "011235@Admin";
+const ADMIN_ACCESS_CODE = "123123";
 
 const adminNavItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
