@@ -630,6 +630,16 @@ export default function CourseDetail() {
       </section>
 
       <Footer />
+
+      {/* Enroll Modal for locked lessons */}
+      {course && (
+        <EnrollModal
+          open={enrollModalOpen}
+          onOpenChange={setEnrollModalOpen}
+          course={course}
+          lessonTitle={clickedLessonTitle}
+        />
+      )}
     </div>
   );
 }
