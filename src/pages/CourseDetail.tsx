@@ -566,15 +566,18 @@ export default function CourseDetail() {
                         <li key={lesson.id} className="space-y-2">
                           <div
                             className={`flex items-center justify-between py-2 px-3 rounded-md transition-colors ${
-                              lesson.is_free_preview
+                              lesson.is_free_preview || hasPurchased
                                 ? "cursor-pointer hover:bg-primary/10"
-                                : "hover:bg-muted/50"
+                                : "cursor-pointer hover:bg-muted/50"
                             }`}
                             onClick={() => {
                               if (lesson.is_free_preview) {
                                 setActivePreviewLessonId(
                                   activePreviewLessonId === lesson.id ? null : lesson.id
                                 );
+                              } else if (!hasPurchased) {
+                                setClickedLessonTitle(lesson.title);
+                                setEnrollModalOpen(true);
                               }
                             }}
                           >
