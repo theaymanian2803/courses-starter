@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Loader2, Tag } from "lucide-react";
 import { OrderBump } from "@/components/checkout/OrderBump";
+import { EnrollModal } from "@/components/checkout/EnrollModal";
 import {
   Accordion,
   AccordionContent,
@@ -65,6 +66,8 @@ export default function CourseDetail() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percent: number } | null>(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
+  const [clickedLessonTitle, setClickedLessonTitle] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const getUser = async () => {
@@ -563,15 +566,18 @@ export default function CourseDetail() {
                         <li key={lesson.id} className="space-y-2">
                           <div
                             className={`flex items-center justify-between py-2 px-3 rounded-md transition-colors ${
-                              lesson.is_free_preview
+                              lesson.is_free_preview || hasPurchased
                                 ? "cursor-pointer hover:bg-primary/10"
-                                : "hover:bg-muted/50"
+                                : "cursor-pointer hover:bg-muted/50"
                             }`}
                             onClick={() => {
                               if (lesson.is_free_preview) {
                                 setActivePreviewLessonId(
                                   activePreviewLessonId === lesson.id ? null : lesson.id
                                 );
+                              } else if (!hasPurchased) {
+                                setClickedLessonTitle(lesson.title);
+                                setEnrollModalOpen(true);
                               }
                             }}
                           >
@@ -624,6 +630,16 @@ export default function CourseDetail() {
       </section>
 
       <Footer />
+
+      {/* Enroll Modal for locked lessons */}
+      {course && (
+        <EnrollModal
+          open={enrollModalOpen}
+          onOpenChange={setEnrollModalOpen}
+          course={course}
+          lessonTitle={clickedLessonTitle}
+        />
+      )}
     </div>
   );
 }
