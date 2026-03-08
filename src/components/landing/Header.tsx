@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type MegaMenuKey = "courses" | "resources" | "community" | "company" | null;
+type MegaMenuKey = "courses" | "company" | null;
 
 const courseLinks = [
   { icon: BookOpen, label: "Browse Courses", desc: "Explore our full catalog", to: "/courses" },
