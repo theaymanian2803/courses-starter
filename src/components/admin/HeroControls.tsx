@@ -64,9 +64,10 @@ export default function HeroControls() {
   const saveMutation = useMutation({
     mutationFn: async (data: Partial<HeroSettings>) => {
       const { id, ...rest } = data as HeroSettings;
+      const payload = { ...rest, overlay_inset: Number(rest.overlay_inset) || 0, updated_at: new Date().toISOString() };
       const { error } = await supabase
         .from("hero_settings")
-        .update({ ...rest, updated_at: new Date().toISOString() })
+        .update(payload)
         .eq("id", id);
       if (error) throw error;
     },
