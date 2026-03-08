@@ -115,7 +115,7 @@ export const Hero = () => {
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1]">
             <span className="text-foreground">{h.heading_line1}</span>
             <br />
-            <span className="text-primary text-glow">{h.heading_highlight}</span>
+            <span className="text-primary">{h.heading_highlight}</span>
             <br />
             <span className="text-foreground/80">{h.heading_line3}</span>
           </h1>
