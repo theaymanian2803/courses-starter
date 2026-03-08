@@ -148,30 +148,6 @@ export const Header = () => {
         </div>
       );
     }
-    if (activeMega === "resources") {
-      return (
-        <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/10 p-5">
-          <Newspaper className="h-8 w-8 text-primary mb-3" />
-          <p className="text-sm font-semibold text-foreground mb-1">Latest on the Blog</p>
-          <p className="text-xs text-muted-foreground mb-3">Build a full-stack app with React & cloud backends in 2026.</p>
-          <Button asChild size="sm" variant="outline" className="w-fit">
-            <Link to="/courses" onClick={() => setActiveMega(null)}>Read More</Link>
-          </Button>
-        </div>
-      );
-    }
-    if (activeMega === "community") {
-      return (
-        <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/10 p-5">
-          <MessageSquare className="h-8 w-8 text-primary mb-3" />
-          <p className="text-sm font-semibold text-foreground mb-1">Join 5,000+ Devs</p>
-          <p className="text-xs text-muted-foreground mb-3">Our Discord community is the best place to learn, share, and grow.</p>
-          <Button asChild size="sm" className="w-fit">
-            <Link to="/courses" onClick={() => setActiveMega(null)}>Join Discord</Link>
-          </Button>
-        </div>
-      );
-    }
     return null;
   };
 
