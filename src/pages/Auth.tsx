@@ -75,10 +75,16 @@ const Auth = () => {
           {/* Title */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-foreground mb-2">
-              {isSignUp ? "Create your account" : "Welcome back"}
+              {isForgotPassword
+                ? "Reset your password"
+                : isSignUp
+                ? "Create your account"
+                : "Welcome back"}
             </h1>
             <p className="text-muted-foreground">
-              {isSignUp
+              {isForgotPassword
+                ? "Enter your email and we'll send you a reset link"
+                : isSignUp
                 ? "Start your coding journey today"
                 : "Sign in to access your courses"}
             </p>
