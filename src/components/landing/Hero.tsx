@@ -18,6 +18,8 @@ const defaults = {
   stat3_value: "8", stat3_label: "Modules",
   stat4_value: "50+", stat4_label: "Hours Content",
   background_image_url: null as string | null,
+  overlay_image_url: null as string | null,
+  overlay_inset: 0,
 };
 
 export const Hero = () => {
