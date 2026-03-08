@@ -31,23 +31,6 @@ const courseLinks = [
   { icon: GraduationCap, label: "Learning Paths", desc: "Structured roadmaps", to: "/courses" },
 ];
 
-const resourceLinks = [
-  { icon: BookMarked, label: "Blog", desc: "Tutorials, tips & insights", to: "/courses" },
-  { icon: Newspaper, label: "Changelog", desc: "Latest updates & releases", to: "/features" },
-  { icon: Youtube, label: "YouTube", desc: "Free video tutorials", to: "/courses" },
-  { icon: Podcast, label: "Podcast", desc: "Weekly dev conversations", to: "/courses" },
-  { icon: Github, label: "Open Source", desc: "Contribute on GitHub", to: "/courses" },
-  { icon: BookOpen, label: "Documentation", desc: "Guides & API references", to: "/courses" },
-];
-
-const communityLinks = [
-  { icon: MessageSquare, label: "Discord Server", desc: "Chat with fellow learners", to: "/courses" },
-  { icon: Users, label: "Student Forum", desc: "Ask questions & share", to: "/courses" },
-  { icon: Trophy, label: "Leaderboard", desc: "Top contributors & streaks", to: "/courses" },
-  { icon: Heart, label: "Mentorship", desc: "1-on-1 guidance from pros", to: "/courses" },
-  { icon: Globe, label: "Events", desc: "Meetups, hackathons & more", to: "/courses" },
-  { icon: Star, label: "Success Stories", desc: "Hear from our graduates", to: "/about" },
-];
 
 const companyLinks = [
   { icon: Users, label: "About Us", desc: "Our mission & team", to: "/about" },
