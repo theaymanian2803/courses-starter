@@ -37,6 +37,10 @@ const ProfilePage = () => {
         return;
       }
       setUser(session.user);
+      
+      // Check if user signed up with email (not OAuth)
+      const provider = session.user.app_metadata?.provider;
+      setIsEmailUser(provider === "email");
 
       const { data: profileData } = await supabase
         .from("profiles")
