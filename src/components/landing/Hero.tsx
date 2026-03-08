@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, Code, Zap, Users, ArrowRight, Flame } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Play, Code, Zap, Users, ArrowRight, Flame, BookOpen, Clock, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const defaults = {
   heading_line1: "Master the",
