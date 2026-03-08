@@ -1,0 +1,1 @@
+ALTER TABLE public.hero_settings ADD COLUMN overlay_opacity numeric NOT NULL DEFAULT 0.3;

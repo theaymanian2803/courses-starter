@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider";
 import { ChevronDown, Loader2, Save, Image, Type, BarChart3, Layers, Upload, Link } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,6 +33,7 @@ interface HeroSettings {
   background_image_url: string | null;
   overlay_image_url: string | null;
   overlay_inset: number;
+  overlay_opacity: number;
 }
 
 export default function HeroControls() {
@@ -65,7 +67,7 @@ export default function HeroControls() {
   const saveMutation = useMutation({
     mutationFn: async (data: Partial<HeroSettings>) => {
       const { id, ...rest } = data as HeroSettings;
-      const payload = { ...rest, overlay_inset: Number(rest.overlay_inset) || 0, updated_at: new Date().toISOString() };
+      const payload = { ...rest, overlay_inset: Number(rest.overlay_inset) || 0, overlay_opacity: Number(rest.overlay_opacity) || 0.3, updated_at: new Date().toISOString() };
       const { error } = await supabase
         .from("hero_settings")
         .update(payload)
@@ -326,6 +328,23 @@ export default function HeroControls() {
                     Current: {displayForm?.overlay_inset ?? 0}px from all edges
                   </span>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Overlay Opacity</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={[Math.round((Number(displayForm?.overlay_opacity ?? 0.3)) * 100)]}
+                    onValueChange={([v]) => updateField("overlay_opacity", String(v / 100))}
+                    className="flex-1"
+                  />
+                  <span className="text-sm font-mono text-muted-foreground w-12 text-right">
+                    {Math.round((Number(displayForm?.overlay_opacity ?? 0.3)) * 100)}%
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">Controls how much the fade overlay covers the image. 0% = fully visible, 100% = fully hidden.</p>
               </div>
             </div>
 

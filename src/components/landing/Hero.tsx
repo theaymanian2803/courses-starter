@@ -20,6 +20,7 @@ const defaults = {
   background_image_url: null as string | null,
   overlay_image_url: null as string | null,
   overlay_inset: 0,
+  overlay_opacity: 0.3,
 };
 
 export const Hero = () => {
@@ -86,7 +87,7 @@ export const Hero = () => {
           />
           {/* Fade overlay for readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />
-          <div className="absolute inset-0 bg-background/30" />
+          <div className="absolute inset-0" style={{ backgroundColor: `hsl(var(--background) / ${Number(h.overlay_opacity ?? 0.3)})` }} />
         </div>
       )}
       <div className="container relative z-10 px-4 py-20">
