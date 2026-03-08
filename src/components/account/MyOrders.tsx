@@ -87,7 +87,7 @@ export function MyOrders({ userId }: { userId: string }) {
                 </Badge>
               </div>
             </div>
-            <Badge className="bg-green-500/10 text-green-500 border-green-500/20">Completed</Badge>
+            <Badge variant="secondary" className="text-primary">Completed</Badge>
             <Button asChild variant="ghost" size="icon">
               <Link to="/dashboard">
                 <ExternalLink className="h-4 w-4" />

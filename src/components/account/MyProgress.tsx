@@ -114,7 +114,7 @@ export function MyProgress({ userId }: { userId: string }) {
                 {mod.lessons.map((lesson) => (
                   <li key={lesson.id} className="flex items-center gap-3 text-sm">
                     {lesson.completed ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
                     ) : (
                       <Circle className="h-4 w-4 text-muted-foreground/40 flex-shrink-0" />
                     )}
