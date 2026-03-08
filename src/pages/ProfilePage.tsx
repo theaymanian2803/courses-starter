@@ -4,14 +4,13 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/landing/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Loader2, Camera, Save, ArrowLeft, Mail, Calendar, Lock } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, ArrowLeft, ShoppingBag, BookOpen, TrendingUp, User } from "lucide-react";
+import { MyOrders } from "@/components/account/MyOrders";
+import { MyCourses } from "@/components/account/MyCourses";
+import { MyProgress } from "@/components/account/MyProgress";
+import { ProfileSettings } from "@/components/account/ProfileSettings";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -21,26 +20,14 @@ const ProfilePage = () => {
     avatar_url: null,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [isEmailUser, setIsEmailUser] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
+      if (!session) { navigate("/auth"); return; }
       setUser(session.user);
-      
-      // Check if user signed up with email (not OAuth)
-      const provider = session.user.app_metadata?.provider;
-      setIsEmailUser(provider === "email");
+      setIsEmailUser(session.user.app_metadata?.provider === "email");
 
       const { data: profileData } = await supabase
         .from("profiles")
@@ -70,111 +57,6 @@ const ProfilePage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleChangePassword = async () => {
-    if (newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    setIsChangingPassword(true);
-    try {
-      // Verify current password by re-signing in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.email,
-        password: currentPassword,
-      });
-      if (signInError) {
-        toast.error("Current password is incorrect");
-        return;
-      }
-
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
-
-      toast.success("Password updated successfully!");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update password");
-    } finally {
-      setIsChangingPassword(false);
-    }
-  };
-
-  const handleSave = async () => {
-    if (!user) return;
-    setIsSaving(true);
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: profile.full_name,
-          avatar_url: profile.avatar_url,
-        })
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-
-      await supabase.auth.updateUser({
-        data: { full_name: profile.full_name, avatar_url: profile.avatar_url },
-      });
-
-      toast.success("Profile updated successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update profile");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Image must be less than 2MB");
-      return;
-    }
-
-    setIsUploading(true);
-    try {
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${user.id}/avatar.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("course-thumbnails")
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from("course-thumbnails")
-        .getPublicUrl(filePath);
-
-      setProfile((prev) => ({ ...prev, avatar_url: publicUrl }));
-      toast.success("Avatar uploaded! Don't forget to save.");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to upload avatar");
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const userInitials = profile.full_name
-    ?.split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .toUpperCase() || "U";
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -186,7 +68,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container max-w-2xl mx-auto px-4 pt-28 pb-16">
+      <div className="container max-w-4xl mx-auto px-4 pt-28 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -202,159 +84,54 @@ const ProfilePage = () => {
             Back to Dashboard
           </Button>
 
-          <Card className="border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-2xl">Profile Settings</CardTitle>
-              <CardDescription>Manage your account details and preferences</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              {/* Avatar Section */}
-              <div className="flex flex-col items-center gap-4">
-                <div className="relative group">
-                  <Avatar className="h-28 w-28 border-2 border-primary/20">
-                    <AvatarImage src={profile.avatar_url || undefined} />
-                    <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                      {userInitials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <label
-                    htmlFor="avatar-upload"
-                    className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  >
-                    {isUploading ? (
-                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                    ) : (
-                      <Camera className="h-6 w-6 text-primary" />
-                    )}
-                  </label>
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                    disabled={isUploading}
+          <h1 className="text-3xl font-bold text-foreground mb-2">My Account</h1>
+          <p className="text-muted-foreground mb-8">Manage your orders, courses, progress, and profile settings.</p>
+
+          <Tabs defaultValue="orders" className="w-full">
+            <TabsList className="w-full grid grid-cols-4 mb-8">
+              <TabsTrigger value="orders" className="gap-2">
+                <ShoppingBag className="h-4 w-4" />
+                <span className="hidden sm:inline">Orders</span>
+              </TabsTrigger>
+              <TabsTrigger value="courses" className="gap-2">
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Courses</span>
+              </TabsTrigger>
+              <TabsTrigger value="progress" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Progress</span>
+              </TabsTrigger>
+              <TabsTrigger value="profile" className="gap-2">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Profile</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="orders">
+              <MyOrders userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="courses">
+              <MyCourses userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="progress">
+              <MyProgress userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="profile">
+              <Card className="border-border bg-card">
+                <CardContent className="p-6">
+                  <ProfileSettings
+                    user={user}
+                    profile={profile}
+                    setProfile={setProfile}
+                    isEmailUser={isEmailUser}
                   />
-                </div>
-                <p className="text-xs text-muted-foreground">Click avatar to upload (max 2MB)</p>
-              </div>
-
-              <Separator />
-
-              {/* Profile Info */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    value={profile.full_name}
-                    onChange={(e) => setProfile((prev) => ({ ...prev, full_name: e.target.value }))}
-                    placeholder="Enter your full name"
-                    className="bg-muted/50"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    Email
-                  </Label>
-                  <Input
-                    value={user?.email || ""}
-                    disabled
-                    className="bg-muted/30 text-muted-foreground cursor-not-allowed"
-                  />
-                  <p className="text-xs text-muted-foreground">Email cannot be changed</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    Member Since
-                  </Label>
-                  <Input
-                    value={user?.created_at ? format(new Date(user.created_at), "MMMM d, yyyy") : ""}
-                    disabled
-                    className="bg-muted/30 text-muted-foreground cursor-not-allowed"
-                  />
-                </div>
-              </div>
-
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="w-full py-6 box-glow"
-              >
-                {isSaving ? (
-                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                ) : (
-                  <Save className="h-5 w-5 mr-2" />
-                )}
-                Save Changes
-              </Button>
-
-              {/* Password Change Section */}
-              {isEmailUser && (
-                <>
-                  <Separator />
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-muted-foreground" />
-                      Change Password
-                    </h3>
-                    <div className="space-y-2">
-                      <Label htmlFor="currentPassword">Current Password</Label>
-                      <Input
-                        id="currentPassword"
-                        type="password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="bg-muted/50"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="newPassword">New Password</Label>
-                      <Input
-                        id="newPassword"
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="••••••••"
-                        minLength={6}
-                        className="bg-muted/50"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                      <Input
-                        id="confirmPassword"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
-                        minLength={6}
-                        className="bg-muted/50"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleChangePassword}
-                      disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
-                      variant="outline"
-                      className="w-full py-6"
-                    >
-                      {isChangingPassword ? (
-                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                      ) : (
-                        <Lock className="h-5 w-5 mr-2" />
-                      )}
-                      Update Password
-                    </Button>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </motion.div>
       </div>
     </div>
