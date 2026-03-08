@@ -224,8 +224,26 @@ export default function HeroControls() {
                   </Button>
                 </div>
               )}
-              <Input type="file" accept="image/*" onChange={handleImageUpload} className="bg-muted/50" />
-              <p className="text-xs text-muted-foreground">Upload a background image (max 5MB). Leave empty for default gradient.</p>
+              <Tabs defaultValue="upload" className="w-full">
+                <TabsList className="w-full">
+                  <TabsTrigger value="upload" className="flex-1 gap-1.5"><Upload className="h-3.5 w-3.5" />Upload</TabsTrigger>
+                  <TabsTrigger value="url" className="flex-1 gap-1.5"><Link className="h-3.5 w-3.5" />Paste URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="mt-2">
+                  <Input type="file" accept="image/*" onChange={handleImageUpload} className="bg-muted/50" />
+                  <p className="text-xs text-muted-foreground mt-1">Upload a background image (max 5MB).</p>
+                </TabsContent>
+                <TabsContent value="url" className="mt-2">
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={displayForm?.background_image_url || ""}
+                    onChange={(e) => updateField("background_image_url", e.target.value)}
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Paste a direct link to an image.</p>
+                </TabsContent>
+              </Tabs>
             </div>
 
             <Separator />
