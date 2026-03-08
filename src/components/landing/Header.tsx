@@ -148,14 +148,25 @@ export const Header = () => {
               <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors py-2">
                 Pricing
               </a>
-              <div className="flex gap-2 pt-2">
-                <Button asChild variant="outline" size="sm" className="flex-1">
-                  <Link to="/auth">Sign In</Link>
-                </Button>
-                <Button asChild size="sm" className="flex-1">
-                  <Link to="/auth">Get Started</Link>
-                </Button>
-              </div>
+              {user ? (
+                <div className="flex gap-2 pt-2">
+                  <Button asChild variant="outline" size="sm" className="flex-1">
+                    <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
+                  </Button>
+                  <Button size="sm" className="flex-1" onClick={() => { handleSignOut(); setIsMobileMenuOpen(false); }}>
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2 pt-2">
+                  <Button asChild variant="outline" size="sm" className="flex-1">
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+                  </Button>
+                  <Button asChild size="sm" className="flex-1">
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
+                  </Button>
+                </div>
+              )}
             </nav>
           </motion.div>
         )}

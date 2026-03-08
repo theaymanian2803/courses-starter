@@ -20,6 +20,20 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const navigate = useNavigate();
 
+  // Listen for auth state changes (handles OAuth redirect)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        navigate("/dashboard");
+      }
+    });
+    // Check if already signed in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate("/dashboard");
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
