@@ -572,11 +572,11 @@ export default function CourseDetail() {
                                 : "cursor-pointer hover:bg-muted/50"
                             }`}
                             onClick={() => {
-                              if (lesson.is_free_preview) {
+                              if (lesson.is_free_preview || hasPurchased) {
                                 setActivePreviewLessonId(
                                   activePreviewLessonId === lesson.id ? null : lesson.id
                                 );
-                              } else if (!hasPurchased) {
+                              } else {
                                 setClickedLessonTitle(lesson.title);
                                 setEnrollModalOpen(true);
                               }
