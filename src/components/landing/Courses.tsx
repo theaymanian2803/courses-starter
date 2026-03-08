@@ -52,6 +52,19 @@ export function Courses() {
     );
   }, [courses, searchQuery]);
 
+  // Reset to page 1 when search changes
+  const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
+  const safeCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
+  const paginatedCourses = useMemo(() => {
+    const start = (safeCurrentPage - 1) * COURSES_PER_PAGE;
+    return filteredCourses.slice(start, start + COURSES_PER_PAGE);
+  }, [filteredCourses, safeCurrentPage]);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
   if (isLoading) {
     return (
       <section id="courses" className="py-20 bg-muted/30">
