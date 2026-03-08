@@ -202,6 +202,7 @@ export function Courses() {
             </Card>
           ))}
         </div>
+        )}
       </div>
       {enrollCourse && (
         <EnrollModal
