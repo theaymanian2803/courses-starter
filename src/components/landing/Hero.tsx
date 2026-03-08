@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, Code, Zap, Users } from "lucide-react";
+import { Play, Code, Zap, Users, ArrowRight, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,7 +49,7 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero">
-      {/* Background image or default */}
+      {/* Background */}
       {h.background_image_url ? (
         <div className="absolute inset-0">
           <img src={h.background_image_url} alt="" className="w-full h-full object-cover" />
@@ -57,19 +57,26 @@ export const Hero = () => {
         </div>
       ) : (
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-glow-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-glow-pulse delay-1000" />
+          {/* Crimson ambient glows */}
+          <div className="absolute top-1/4 left-1/6 w-[500px] h-[500px] bg-primary/8 rounded-full blur-[120px]" />
+          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/3 rounded-full blur-[200px]" />
+          {/* Subtle grid */}
           <div
-            className="absolute inset-0 opacity-[0.02]"
+            className="absolute inset-0 opacity-[0.03]"
             style={{
-              backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px'
+              backgroundImage: `linear-gradient(hsl(var(--primary) / 0.5) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.5) 1px, transparent 1px)`,
+              backgroundSize: '80px 80px'
             }}
           />
+          {/* Noise texture overlay */}
+          <div className="absolute inset-0 opacity-[0.015]" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+          }} />
         </div>
       )}
 
-      {/* Overlay image with inset + fade */}
+      {/* Overlay image */}
       {h.overlay_image_url && (
         <div
           className="absolute z-[1] overflow-hidden rounded-2xl pointer-events-none"
@@ -80,16 +87,12 @@ export const Hero = () => {
             left: `${h.overlay_inset || 0}px`,
           }}
         >
-          <img
-            src={h.overlay_image_url}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-          {/* Fade overlay for readability */}
+          <img src={h.overlay_image_url} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />
           <div className="absolute inset-0" style={{ backgroundColor: `hsl(var(--background) / ${Number(h.overlay_opacity ?? 0.3)})` }} />
         </div>
       )}
+
       <div className="container relative z-10 px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -102,19 +105,19 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 mb-8"
           >
-            <span className="w-2 h-2 bg-success rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-muted-foreground">{h.badge_text}</span>
+            <Flame className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-foreground/80">{h.badge_text}</span>
           </motion.div>
 
           {/* Main heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1]">
             <span className="text-foreground">{h.heading_line1}</span>
             <br />
             <span className="text-primary text-glow">{h.heading_highlight}</span>
             <br />
-            <span className="text-foreground">{h.heading_line3}</span>
+            <span className="text-foreground/80">{h.heading_line3}</span>
           </h1>
 
           {/* Subheading */}
@@ -122,7 +125,7 @@ export const Hero = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             {h.subheading}
           </motion.p>
@@ -134,13 +137,13 @@ export const Hero = () => {
             transition={{ delay: 0.6, duration: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
           >
-            <Button asChild size="lg" className="text-lg px-8 py-6 box-glow">
+            <Button asChild size="lg" className="text-lg px-8 py-6 box-glow font-semibold">
               <Link to="/auth">
                 {h.cta_primary_text}
-                <Zap className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 group">
+            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 group border-border/50">
               <a href="#curriculum">
                 <Play className="mr-2 h-5 w-5 group-hover:text-primary transition-colors" />
                 {h.cta_secondary_text}
@@ -153,7 +156,7 @@ export const Hero = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -161,11 +164,11 @@ export const Hero = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 + index * 0.1, duration: 0.4 }}
-                className="glass rounded-xl p-4 text-center"
+                className="rounded-xl p-4 text-center border border-border/30 bg-card/50 backdrop-blur-sm"
               >
-                <stat.icon className="h-6 w-6 mx-auto mb-2 text-primary" />
+                <stat.icon className="h-5 w-5 mx-auto mb-2 text-primary" />
                 <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -179,7 +182,7 @@ export const Hero = () => {
         transition={{ delay: 1.2, duration: 0.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
-        <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-1">
+        <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/20 flex items-start justify-center p-1">
           <motion.div
             animate={{ y: [0, 12, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
