@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, Clock, Users, ShoppingCart } from "lucide-react";
+import { BookOpen, Clock, Users, ShoppingCart, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EnrollModal } from "@/components/checkout/EnrollModal";
 
