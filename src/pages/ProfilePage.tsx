@@ -6,10 +6,11 @@ import { Header } from "@/components/landing/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, ArrowLeft, ShoppingBag, BookOpen, TrendingUp, User } from "lucide-react";
+import { Loader2, ArrowLeft, ShoppingBag, BookOpen, TrendingUp, User, CreditCard } from "lucide-react";
 import { MyOrders } from "@/components/account/MyOrders";
 import { MyCourses } from "@/components/account/MyCourses";
 import { MyProgress } from "@/components/account/MyProgress";
+import { MySubscription } from "@/components/account/MySubscription";
 import { ProfileSettings } from "@/components/account/ProfileSettings";
 
 const ProfilePage = () => {
