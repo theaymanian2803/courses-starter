@@ -249,12 +249,15 @@ export const Header = () => {
                 <Button asChild variant="outline" size="sm">
                   <Link to="/dashboard">Dashboard</Link>
                 </Button>
-                <Link to="/profile" className="hover:opacity-80 transition-opacity">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.user_metadata?.avatar_url} />
-                    <AvatarFallback className="text-xs">{userInitials}</AvatarFallback>
-                  </Avatar>
-                </Link>
+                <Button asChild variant="ghost" size="sm">
+                  <Link to="/profile" className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={user.user_metadata?.avatar_url} />
+                      <AvatarFallback className="text-[10px]">{userInitials}</AvatarFallback>
+                    </Avatar>
+                    My Account
+                  </Link>
+                </Button>
                 <button onClick={handleSignOut} className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
                   <LogOut className="h-4 w-4" />
                 </button>
