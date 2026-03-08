@@ -68,6 +68,27 @@ export const Hero = () => {
         </div>
       )}
 
+      {/* Overlay image with inset + fade */}
+      {h.overlay_image_url && (
+        <div
+          className="absolute z-[1] overflow-hidden rounded-2xl pointer-events-none"
+          style={{
+            top: `${h.overlay_inset || 0}px`,
+            right: `${h.overlay_inset || 0}px`,
+            bottom: `${h.overlay_inset || 0}px`,
+            left: `${h.overlay_inset || 0}px`,
+          }}
+        >
+          <img
+            src={h.overlay_image_url}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+          {/* Fade overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />
+          <div className="absolute inset-0 bg-background/30" />
+        </div>
+      )}
       <div className="container relative z-10 px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
