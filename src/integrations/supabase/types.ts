@@ -194,6 +194,7 @@ export type Database = {
           id: string
           overlay_image_url: string | null
           overlay_inset: number | null
+          overlay_opacity: number
           stat1_label: string
           stat1_value: string
           stat2_label: string
@@ -216,6 +217,7 @@ export type Database = {
           id?: string
           overlay_image_url?: string | null
           overlay_inset?: number | null
+          overlay_opacity?: number
           stat1_label?: string
           stat1_value?: string
           stat2_label?: string
@@ -238,6 +240,7 @@ export type Database = {
           id?: string
           overlay_image_url?: string | null
           overlay_inset?: number | null
+          overlay_opacity?: number
           stat1_label?: string
           stat1_value?: string
           stat2_label?: string
