@@ -11,6 +11,7 @@ import FaqPage from "./pages/FaqPage";
 import ContactPage from "./pages/ContactPage";
 import FeaturesPage from "./pages/FeaturesPage";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import CourseDetail from "./pages/CourseDetail";
 import PaymentSuccess from "./pages/PaymentSuccess";
