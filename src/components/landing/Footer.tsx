@@ -1,4 +1,4 @@
-import { Code2, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Heart } from "lucide-react";
+import { Code2, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Heart, Twitter, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const resourceLinks = [
@@ -42,6 +42,23 @@ export const Footer = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">
               Learn to code with hands-on projects and expert instructors. Join thousands of developers building the future.
             </p>
+            <div className="flex items-center gap-3">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                <Twitter className="h-4 w-4" />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                <Linkedin className="h-4 w-4" />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                <Youtube className="h-4 w-4" />
+              </a>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                <Github className="h-4 w-4" />
+              </a>
+            </div>
           </div>
 
           {/* Company */}
