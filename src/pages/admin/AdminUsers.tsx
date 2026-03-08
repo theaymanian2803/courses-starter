@@ -234,9 +234,17 @@ export default function AdminUsers() {
                               <User className="h-4 w-4 text-muted-foreground" />
                             )}
                           </div>
-                          <span className="font-medium">
-                            {profile.full_name || "Unnamed User"}
-                          </span>
+                          <div>
+                            <span className="font-medium">
+                              {profile.full_name || "Unnamed User"}
+                            </span>
+                            {getUserEmail(profile.user_id) && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Mail className="h-3 w-3" />
+                                {getUserEmail(profile.user_id)}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
