@@ -1,14 +1,18 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Calendar, Clock, Star } from "lucide-react";
+import { CreditCard, Calendar, Clock, Star, Settings, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 export function MySubscription({ userId }: { userId: string }) {
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
+
   const { data: subscription, isLoading } = useQuery({
     queryKey: ["userSubscription", userId],
     queryFn: async () => {
@@ -24,6 +28,24 @@ export function MySubscription({ userId }: { userId: string }) {
       return data;
     },
   });
+
+  const handleManageSubscription = async () => {
+    setIsPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("No portal URL returned");
+      }
+    } catch (err: any) {
+      console.error("Portal error:", err);
+      toast.error(err.message || "Failed to open subscription management portal");
+    } finally {
+      setIsPortalLoading(false);
+    }
+  };
 
   if (isLoading) {
     return <Skeleton className="h-48 w-full rounded-xl" />;
@@ -102,6 +124,25 @@ export function MySubscription({ userId }: { userId: string }) {
               </ul>
             </div>
           )}
+
+          <div className="pt-3 border-t border-border">
+            <Button
+              onClick={handleManageSubscription}
+              disabled={isPortalLoading}
+              variant="outline"
+              className="gap-2"
+            >
+              {isPortalLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Settings className="h-4 w-4" />
+              )}
+              Manage Subscription
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2">
+              Upgrade, downgrade, or cancel your plan
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
