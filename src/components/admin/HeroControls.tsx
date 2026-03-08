@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, Loader2, Save, Image, Type, BarChart3, Layers } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, Loader2, Save, Image, Type, BarChart3, Layers, Upload, Link } from "lucide-react";
 import { toast } from "sonner";
 
 interface HeroSettings {
