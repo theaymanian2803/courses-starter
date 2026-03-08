@@ -79,6 +79,8 @@ export default function AdminDashboard() {
           </Card>
         ))}
       </div>
+
+      <HeroControls />
     </div>
   );
 }
