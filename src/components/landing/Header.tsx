@@ -47,6 +47,18 @@ export const Header = () => {
             >
               Courses
             </Link>
+            <Link
+              to="/features"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              to="/about"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              About
+            </Link>
             <a
               href="#pricing"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -79,18 +91,16 @@ export const Header = () => {
             className="md:hidden pt-4 pb-2"
           >
             <nav className="flex flex-col gap-4">
-              <Link
-                to="/courses"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors py-2"
-              >
+              <Link to="/courses" onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors py-2">
                 Courses
               </Link>
-              <a
-                href="#pricing"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors py-2"
-              >
+              <Link to="/features" onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors py-2">
+                Features
+              </Link>
+              <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors py-2">
+                About
+              </Link>
+              <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors py-2">
                 Pricing
               </a>
               <div className="flex gap-2 pt-2">
