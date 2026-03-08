@@ -15,6 +15,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import CourseDetail from "./pages/CourseDetail";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/course/:courseId" element={<CourseDetail />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/profile" element={<ProfilePage />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>
