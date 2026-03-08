@@ -182,6 +182,69 @@ export type Database = {
         }
         Relationships: []
       }
+      hero_settings: {
+        Row: {
+          background_image_url: string | null
+          badge_text: string
+          cta_primary_text: string
+          cta_secondary_text: string
+          heading_highlight: string
+          heading_line1: string
+          heading_line3: string
+          id: string
+          stat1_label: string
+          stat1_value: string
+          stat2_label: string
+          stat2_value: string
+          stat3_label: string
+          stat3_value: string
+          stat4_label: string
+          stat4_value: string
+          subheading: string
+          updated_at: string
+        }
+        Insert: {
+          background_image_url?: string | null
+          badge_text?: string
+          cta_primary_text?: string
+          cta_secondary_text?: string
+          heading_highlight?: string
+          heading_line1?: string
+          heading_line3?: string
+          id?: string
+          stat1_label?: string
+          stat1_value?: string
+          stat2_label?: string
+          stat2_value?: string
+          stat3_label?: string
+          stat3_value?: string
+          stat4_label?: string
+          stat4_value?: string
+          subheading?: string
+          updated_at?: string
+        }
+        Update: {
+          background_image_url?: string | null
+          badge_text?: string
+          cta_primary_text?: string
+          cta_secondary_text?: string
+          heading_highlight?: string
+          heading_line1?: string
+          heading_line3?: string
+          id?: string
+          stat1_label?: string
+          stat1_value?: string
+          stat2_label?: string
+          stat2_value?: string
+          stat3_label?: string
+          stat3_value?: string
+          stat4_label?: string
+          stat4_value?: string
+          subheading?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lesson_comments: {
         Row: {
           content: string
