@@ -33,6 +33,7 @@ interface HeroSettings {
   background_image_url: string | null;
   overlay_image_url: string | null;
   overlay_inset: number;
+  overlay_opacity: number;
 }
 
 export default function HeroControls() {
