@@ -6,12 +6,20 @@ import {
   BookOpen, Layers, Zap, Users, HelpCircle,
   Mail, Shield, Star, GraduationCap, Sparkles,
   MessageSquare, Github, Youtube, BookMarked, Newspaper,
-  Podcast, Trophy, Heart, Globe
+  Podcast, Trophy, Heart, Globe, User, ShoppingBag, CreditCard, LayoutDashboard
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type MegaMenuKey = "courses" | "resources" | "community" | "company" | null;
 
