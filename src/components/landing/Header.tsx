@@ -96,15 +96,15 @@ export const Header = () => {
                 <Button asChild variant="outline" size="sm">
                   <Link to="/dashboard">Dashboard</Link>
                 </Button>
-                <div className="flex items-center gap-2">
+                <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.user_metadata?.avatar_url} />
                     <AvatarFallback className="text-xs">{userInitials}</AvatarFallback>
                   </Avatar>
-                  <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground transition-colors">
-                    <LogOut className="h-4 w-4" />
-                  </button>
-                </div>
+                </Link>
+                <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <LogOut className="h-4 w-4" />
+                </button>
               </>
             ) : (
               <>
