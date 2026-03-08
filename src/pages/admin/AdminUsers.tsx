@@ -161,10 +161,16 @@ export default function AdminUsers() {
     return roles?.filter((r) => r.user_id === userId) || [];
   };
 
+  const getUserEmail = (userId: string) => {
+    return emails?.find((e) => e.user_id === userId)?.email || null;
+  };
+
   const filteredProfiles = profiles?.filter((profile) => {
     if (!searchQuery) return true;
     const name = (profile.full_name || "").toLowerCase();
-    return name.includes(searchQuery.toLowerCase());
+    const email = (getUserEmail(profile.user_id) || "").toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return name.includes(query) || email.includes(query);
   });
 
   const roleIcon = (role: string) => {
