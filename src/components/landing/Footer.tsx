@@ -1,4 +1,4 @@
-import { Code2, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Heart } from "lucide-react";
+import { Code2, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Heart, Twitter, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const resourceLinks = [
