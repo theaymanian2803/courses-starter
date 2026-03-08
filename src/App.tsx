@@ -30,6 +30,7 @@ import AdminUpsells from "./pages/admin/AdminUpsells";
 import AdminTiers from "./pages/admin/AdminTiers";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminInstructors from "./pages/admin/AdminInstructors";
+import AdminSocialLinks from "./pages/admin/AdminSocialLinks";
 
 const queryClient = new QueryClient();
 
