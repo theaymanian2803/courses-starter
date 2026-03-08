@@ -20,6 +20,7 @@ const defaults = {
   background_image_url: null as string | null,
   overlay_image_url: null as string | null,
   overlay_inset: 0,
+  overlay_opacity: 0.3,
 };
 
 export const Hero = () => {
