@@ -207,5 +207,46 @@ export const Hero = () => {
         </div>
       </motion.div>
     </section>
+
+    {/* Curriculum Preview Modal */}
+    <Dialog open={showCurriculum} onOpenChange={setShowCurriculum}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold">Our Top Courses</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 mt-2">
+          {topCourses && topCourses.length > 0 ? (
+            topCourses.map((course) => (
+              <div
+                key={course.id}
+                onClick={() => { setShowCurriculum(false); navigate(`/course/${course.id}`); }}
+                className="flex items-start gap-4 p-4 rounded-xl border border-border/50 bg-muted/30 hover:bg-muted/60 transition-colors cursor-pointer group"
+              >
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{course.title}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{course.description || "No description"}</p>
+                  <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" />Self-paced</span>
+                    <span className="font-semibold text-primary">${course.price}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground text-center py-6">Courses coming soon!</p>
+          )}
+        </div>
+        <Button asChild size="lg" className="w-full mt-2">
+          <Link to="/courses" onClick={() => setShowCurriculum(false)}>
+            View All Courses
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
