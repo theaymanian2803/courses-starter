@@ -8,11 +8,12 @@ export default function AdminDashboard() {
   const { data: stats } = useQuery({
     queryKey: ["adminStats"],
     queryFn: async () => {
-      const [courses, modules, lessons, purchases] = await Promise.all([
+      const [courses, modules, lessons, purchases, users] = await Promise.all([
         supabase.from("courses").select("id", { count: "exact" }),
         supabase.from("modules").select("id", { count: "exact" }),
         supabase.from("lessons").select("id", { count: "exact" }),
         supabase.from("purchases").select("id", { count: "exact" }),
+        supabase.from("profiles").select("id", { count: "exact" }),
       ]);
 
       return {
@@ -20,6 +21,7 @@ export default function AdminDashboard() {
         modulesCount: modules.count || 0,
         lessonsCount: lessons.count || 0,
         purchasesCount: purchases.count || 0,
+        usersCount: users.count || 0,
       };
     },
   });
