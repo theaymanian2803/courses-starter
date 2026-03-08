@@ -94,6 +94,15 @@ export default function AdminUsers() {
     },
   });
 
+  const { data: emails } = useQuery({
+    queryKey: ["adminUserEmails"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_user_emails");
+      if (error) throw error;
+      return data as { user_id: string; email: string }[];
+    },
+  });
+
   const { data: roles } = useQuery({
     queryKey: ["adminUserRoles"],
     queryFn: async () => {
