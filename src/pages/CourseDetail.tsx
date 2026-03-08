@@ -31,6 +31,7 @@ import {
   Users,
 } from "lucide-react";
 import { VideoPlayer } from "@/components/VideoPlayer";
+import { LessonComments } from "@/components/lesson/LessonComments";
 
 type Course = {
   id: string;
@@ -571,11 +572,11 @@ export default function CourseDetail() {
                                 : "cursor-pointer hover:bg-muted/50"
                             }`}
                             onClick={() => {
-                              if (lesson.is_free_preview) {
+                              if (lesson.is_free_preview || hasPurchased) {
                                 setActivePreviewLessonId(
                                   activePreviewLessonId === lesson.id ? null : lesson.id
                                 );
-                              } else if (!hasPurchased) {
+                              } else {
                                 setClickedLessonTitle(lesson.title);
                                 setEnrollModalOpen(true);
                               }
@@ -602,11 +603,21 @@ export default function CourseDetail() {
                             </div>
                           </div>
                           {lesson.is_free_preview && activePreviewLessonId === lesson.id && (
-                            <div className="ml-0 mb-2">
+                            <div className="ml-0 mb-2 space-y-4">
                               <VideoPlayer
                                 youtubeVideoId={lesson.youtube_video_id}
                                 title={lesson.title}
                               />
+                              <LessonComments lessonId={lesson.id} userId={userId} />
+                            </div>
+                          )}
+                          {hasPurchased && activePreviewLessonId === lesson.id && !lesson.is_free_preview && (
+                            <div className="ml-0 mb-2 space-y-4">
+                              <VideoPlayer
+                                youtubeVideoId={lesson.youtube_video_id}
+                                title={lesson.title}
+                              />
+                              <LessonComments lessonId={lesson.id} userId={userId} />
                             </div>
                           )}
                         </li>
