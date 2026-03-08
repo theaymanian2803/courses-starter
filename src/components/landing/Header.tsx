@@ -300,7 +300,7 @@ export const Header = () => {
                   <div className="flex gap-8">
                     <div className="flex-1">
                       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                        {activeMega === "courses" ? "Learn" : activeMega === "resources" ? "Resources" : activeMega === "community" ? "Community" : "Company"}
+                        {activeMega === "courses" ? "Learn" : "Company"}
                       </p>
                       {renderMegaLinks(getLinks(activeMega))}
                     </div>
