@@ -244,18 +244,15 @@ const Dashboard = () => {
         className={cn(
           "fixed md:relative z-40 h-screen transition-all duration-300 flex flex-col",
           "bg-sidebar border-r border-sidebar-border",
-          isSidebarOpen ? "w-80" : "w-0 md:w-16",
+          isSidebarOpen ? "w-80" : "w-0 md:w-0",
           "overflow-hidden"
         )}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-between p-4 border-b border-sidebar-border min-w-[20rem]">
           <Link
             to="/"
-            className={cn(
-              "flex items-center gap-2 transition-opacity",
-              !isSidebarOpen && "md:opacity-0"
-            )}
+            className="flex items-center gap-2"
           >
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
               <Code2 className="h-4 w-4 text-primary" />
@@ -265,14 +262,10 @@ const Dashboard = () => {
             </span>
           </Link>
           <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            onClick={() => setIsSidebarOpen(false)}
             className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
           >
-            {isSidebarOpen ? (
-              <X className="h-4 w-4 text-sidebar-foreground" />
-            ) : (
-              <Menu className="h-4 w-4 text-sidebar-foreground" />
-            )}
+            <X className="h-4 w-4 text-sidebar-foreground" />
           </button>
         </div>
 
@@ -382,11 +375,11 @@ const Dashboard = () => {
         )}
       </aside>
 
-      {/* Mobile sidebar toggle */}
+      {/* Sidebar toggle button — always visible when closed */}
       {!isSidebarOpen && (
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="fixed bottom-4 left-4 z-50 md:hidden p-3 bg-primary text-primary-foreground rounded-full shadow-lg box-glow"
+          className="fixed bottom-4 left-4 z-50 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-colors"
         >
           <Menu className="h-5 w-5" />
         </button>
