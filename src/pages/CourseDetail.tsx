@@ -603,11 +603,21 @@ export default function CourseDetail() {
                             </div>
                           </div>
                           {lesson.is_free_preview && activePreviewLessonId === lesson.id && (
-                            <div className="ml-0 mb-2">
+                            <div className="ml-0 mb-2 space-y-4">
                               <VideoPlayer
                                 youtubeVideoId={lesson.youtube_video_id}
                                 title={lesson.title}
                               />
+                              <LessonComments lessonId={lesson.id} userId={userId} />
+                            </div>
+                          )}
+                          {hasPurchased && activePreviewLessonId === lesson.id && !lesson.is_free_preview && (
+                            <div className="ml-0 mb-2 space-y-4">
+                              <VideoPlayer
+                                youtubeVideoId={lesson.youtube_video_id}
+                                title={lesson.title}
+                              />
+                              <LessonComments lessonId={lesson.id} userId={userId} />
                             </div>
                           )}
                         </li>
