@@ -17,10 +17,13 @@ type Course = {
   thumbnail_url: string | null;
 };
 
+const COURSES_PER_PAGE = 9;
+
 export function Courses() {
   const navigate = useNavigate();
   const [enrollCourse, setEnrollCourse] = useState<Course | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["courses"],
