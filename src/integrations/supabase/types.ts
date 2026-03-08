@@ -192,6 +192,8 @@ export type Database = {
           heading_line1: string
           heading_line3: string
           id: string
+          overlay_image_url: string | null
+          overlay_inset: number | null
           stat1_label: string
           stat1_value: string
           stat2_label: string
@@ -212,6 +214,8 @@ export type Database = {
           heading_line1?: string
           heading_line3?: string
           id?: string
+          overlay_image_url?: string | null
+          overlay_inset?: number | null
           stat1_label?: string
           stat1_value?: string
           stat2_label?: string
@@ -232,6 +236,8 @@ export type Database = {
           heading_line1?: string
           heading_line3?: string
           id?: string
+          overlay_image_url?: string | null
+          overlay_inset?: number | null
           stat1_label?: string
           stat1_value?: string
           stat2_label?: string
