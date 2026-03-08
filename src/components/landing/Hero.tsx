@@ -26,6 +26,9 @@ const defaults = {
 };
 
 export const Hero = () => {
+  const [showCurriculum, setShowCurriculum] = useState(false);
+  const navigate = useNavigate();
+
   const { data: settings } = useQuery({
     queryKey: ["heroSettings"],
     queryFn: async () => {
@@ -38,6 +41,19 @@ export const Hero = () => {
       return data;
     },
     staleTime: 60000,
+  });
+
+  const { data: topCourses } = useQuery({
+    queryKey: ["topCourses"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data;
+    },
   });
 
   const h = settings || defaults;
