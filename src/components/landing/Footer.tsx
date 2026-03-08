@@ -2,8 +2,6 @@ import { Code2, BookMarked, Newspaper, Youtube, Podcast, Github, BookOpen, Messa
 import { Link } from "react-router-dom";
 
 const resourceLinks = [
-  { icon: BookMarked, label: "Blog", to: "/courses" },
-  { icon: Newspaper, label: "Changelog", to: "/features" },
   { icon: Youtube, label: "YouTube", to: "/courses" },
   { icon: Podcast, label: "Podcast", to: "/courses" },
   { icon: Github, label: "Open Source", to: "/courses" },
@@ -13,10 +11,7 @@ const resourceLinks = [
 const communityLinks = [
   { icon: MessageSquare, label: "Discord Server", to: "/courses" },
   { icon: Users, label: "Student Forum", to: "/courses" },
-  { icon: Trophy, label: "Leaderboard", to: "/courses" },
   { icon: Heart, label: "Mentorship", to: "/courses" },
-  { icon: Globe, label: "Events", to: "/courses" },
-  { icon: Star, label: "Success Stories", to: "/about" },
 ];
 
 const companyLinks = [
