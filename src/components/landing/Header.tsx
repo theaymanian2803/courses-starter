@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Code2, Menu, X, LogOut, ChevronDown,
-  BookOpen, Layers, Award, Zap, Users, HelpCircle,
-  Mail, Shield, FileText, Star, GraduationCap, Sparkles
+  BookOpen, Layers, Zap, Users, HelpCircle,
+  Mail, Shield, Star, GraduationCap, Sparkles,
+  MessageSquare, Github, Youtube, BookMarked, Newspaper,
+  Podcast, Trophy, Heart, Globe
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -23,14 +25,14 @@ const courseLinks = [
 const resourceLinks = [
   { icon: BookMarked, label: "Blog", desc: "Tutorials, tips & insights", to: "/courses" },
   { icon: Newspaper, label: "Changelog", desc: "Latest updates & releases", to: "/features" },
-  { icon: Youtube, label: "YouTube", desc: "Free video tutorials", to: "/courses", external: true },
-  { icon: Podcast, label: "Podcast", desc: "Weekly dev conversations", to: "/courses", external: true },
-  { icon: Github, label: "Open Source", desc: "Contribute on GitHub", to: "/courses", external: true },
+  { icon: Youtube, label: "YouTube", desc: "Free video tutorials", to: "/courses" },
+  { icon: Podcast, label: "Podcast", desc: "Weekly dev conversations", to: "/courses" },
+  { icon: Github, label: "Open Source", desc: "Contribute on GitHub", to: "/courses" },
   { icon: BookOpen, label: "Documentation", desc: "Guides & API references", to: "/courses" },
 ];
 
 const communityLinks = [
-  { icon: MessageSquare, label: "Discord Server", desc: "Chat with fellow learners", to: "/courses", external: true },
+  { icon: MessageSquare, label: "Discord Server", desc: "Chat with fellow learners", to: "/courses" },
   { icon: Users, label: "Student Forum", desc: "Ask questions & share", to: "/courses" },
   { icon: Trophy, label: "Leaderboard", desc: "Top contributors & streaks", to: "/courses" },
   { icon: Heart, label: "Mentorship", desc: "1-on-1 guidance from pros", to: "/courses" },
@@ -44,6 +46,13 @@ const companyLinks = [
   { icon: HelpCircle, label: "FAQ", desc: "Common questions answered", to: "/faq" },
   { icon: Mail, label: "Contact", desc: "Get in touch with us", to: "/contact" },
   { icon: Shield, label: "Policies", desc: "Privacy & terms", to: "/policies" },
+];
+
+const megaSections = [
+  { key: "courses" as const, label: "Courses" },
+  { key: "resources" as const, label: "Resources" },
+  { key: "community" as const, label: "Community" },
+  { key: "company" as const, label: "Company" },
 ];
 
 export const Header = () => {
@@ -107,6 +116,16 @@ export const Header = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
   };
 
+  const getLinks = (key: MegaMenuKey) => {
+    switch (key) {
+      case "courses": return courseLinks;
+      case "resources": return resourceLinks;
+      case "community": return communityLinks;
+      case "company": return companyLinks;
+      default: return [];
+    }
+  };
+
   const renderMegaLinks = (links: typeof courseLinks) => (
     <div className="grid grid-cols-2 gap-1">
       {links.map((item) => (
@@ -127,6 +146,46 @@ export const Header = () => {
       ))}
     </div>
   );
+
+  const renderPromoCard = () => {
+    if (activeMega === "courses") {
+      return (
+        <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 p-5">
+          <Zap className="h-8 w-8 text-primary mb-3" />
+          <p className="text-sm font-semibold text-foreground mb-1">New: AI Fundamentals</p>
+          <p className="text-xs text-muted-foreground mb-3">Master the basics of AI & machine learning in 4 weeks.</p>
+          <Button asChild size="sm" className="w-fit">
+            <Link to="/courses" onClick={() => setActiveMega(null)}>Explore</Link>
+          </Button>
+        </div>
+      );
+    }
+    if (activeMega === "resources") {
+      return (
+        <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/10 p-5">
+          <Newspaper className="h-8 w-8 text-primary mb-3" />
+          <p className="text-sm font-semibold text-foreground mb-1">Latest on the Blog</p>
+          <p className="text-xs text-muted-foreground mb-3">Build a full-stack app with React & cloud backends in 2026.</p>
+          <Button asChild size="sm" variant="outline" className="w-fit">
+            <Link to="/courses" onClick={() => setActiveMega(null)}>Read More</Link>
+          </Button>
+        </div>
+      );
+    }
+    if (activeMega === "community") {
+      return (
+        <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/10 p-5">
+          <MessageSquare className="h-8 w-8 text-primary mb-3" />
+          <p className="text-sm font-semibold text-foreground mb-1">Join 5,000+ Devs</p>
+          <p className="text-xs text-muted-foreground mb-3">Our Discord community is the best place to learn, share, and grow.</p>
+          <Button asChild size="sm" className="w-fit">
+            <Link to="/courses" onClick={() => setActiveMega(null)}>Join Discord</Link>
+          </Button>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <motion.header
@@ -153,47 +212,28 @@ export const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {/* Courses Mega */}
-            <div
-              className="relative"
-              onMouseEnter={() => openMega("courses")}
-              onMouseLeave={closeMega}
-            >
-              <button
-                className={cn(
-                  "inline-flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                  activeMega === "courses"
-                    ? "text-foreground bg-secondary/50"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
-                )}
-                onClick={() => setActiveMega(activeMega === "courses" ? null : "courses")}
+            {megaSections.map((section) => (
+              <div
+                key={section.key}
+                className="relative"
+                onMouseEnter={() => openMega(section.key)}
+                onMouseLeave={closeMega}
               >
-                Courses
-                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", activeMega === "courses" && "rotate-180")} />
-              </button>
-            </div>
+                <button
+                  className={cn(
+                    "inline-flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-md transition-colors",
+                    activeMega === section.key
+                      ? "text-foreground bg-secondary/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                  )}
+                  onClick={() => setActiveMega(activeMega === section.key ? null : section.key)}
+                >
+                  {section.label}
+                  <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", activeMega === section.key && "rotate-180")} />
+                </button>
+              </div>
+            ))}
 
-            {/* Company Mega */}
-            <div
-              className="relative"
-              onMouseEnter={() => openMega("company")}
-              onMouseLeave={closeMega}
-            >
-              <button
-                className={cn(
-                  "inline-flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                  activeMega === "company"
-                    ? "text-foreground bg-secondary/50"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
-                )}
-                onClick={() => setActiveMega(activeMega === "company" ? null : "company")}
-              >
-                Company
-                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", activeMega === "company" && "rotate-180")} />
-              </button>
-            </div>
-
-            {/* Simple Links */}
             <a
               href="#pricing"
               className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
@@ -253,32 +293,15 @@ export const Header = () => {
             >
               <div className="container px-4 pt-2">
                 <div className="rounded-xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/5 p-6">
-                  {activeMega === "courses" && (
-                    <div className="flex gap-8">
-                      <div className="flex-1">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                          Learn
-                        </p>
-                        {renderMegaLinks(courseLinks)}
-                      </div>
-                      <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 p-5">
-                        <Zap className="h-8 w-8 text-primary mb-3" />
-                        <p className="text-sm font-semibold text-foreground mb-1">New: AI Fundamentals</p>
-                        <p className="text-xs text-muted-foreground mb-3">Master the basics of AI & machine learning in 4 weeks.</p>
-                        <Button asChild size="sm" className="w-fit">
-                          <Link to="/courses" onClick={() => setActiveMega(null)}>Explore</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  {activeMega === "company" && (
-                    <div>
+                  <div className="flex gap-8">
+                    <div className="flex-1">
                       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                        Company
+                        {activeMega === "courses" ? "Learn" : activeMega === "resources" ? "Resources" : activeMega === "community" ? "Community" : "Company"}
                       </p>
-                      {renderMegaLinks(companyLinks)}
+                      {renderMegaLinks(getLinks(activeMega))}
                     </div>
-                  )}
+                    {renderPromoCard()}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -295,99 +318,39 @@ export const Header = () => {
               className="md:hidden pt-4 pb-2 overflow-hidden"
             >
               <nav className="flex flex-col gap-1">
-                {/* Mobile Courses Accordion */}
-                <button
-                  onClick={() => setMobileExpanded(mobileExpanded === "courses" ? null : "courses")}
-                  className="flex items-center justify-between py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
-                >
-                  <span>Courses</span>
-                  <ChevronDown className={cn("h-4 w-4 transition-transform", mobileExpanded === "courses" && "rotate-180")} />
-                </button>
-                <AnimatePresence>
-                  {mobileExpanded === "courses" && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden pl-2"
+                {megaSections.map((section) => (
+                  <div key={section.key}>
+                    <button
+                      onClick={() => setMobileExpanded(mobileExpanded === section.key ? null : section.key)}
+                      className="w-full flex items-center justify-between py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
                     >
-                      {courseLinks.map((item) => (
-                        <Link
-                          key={item.label}
-                          to={item.to}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
+                      <span>{section.label}</span>
+                      <ChevronDown className={cn("h-4 w-4 transition-transform", mobileExpanded === section.key && "rotate-180")} />
+                    </button>
+                    <AnimatePresence>
+                      {mobileExpanded === section.key && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden pl-2"
                         >
-                          <item.icon className="h-4 w-4 text-primary" />
-                          {item.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Mobile Resources Accordion */}
-                <button
-                  onClick={() => setMobileExpanded(mobileExpanded === "resources" ? null : "resources")}
-                  className="flex items-center justify-between py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
-                >
-                  <span>Resources</span>
-                  <ChevronDown className={cn("h-4 w-4 transition-transform", mobileExpanded === "resources" && "rotate-180")} />
-                </button>
-                <AnimatePresence>
-                  {mobileExpanded === "resources" && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-2">
-                      {resourceLinks.map((item) => (
-                        <Link key={item.label} to={item.to} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
-                          <item.icon className="h-4 w-4 text-primary" />
-                          {item.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Mobile Community Accordion */}
-                <button
-                  onClick={() => setMobileExpanded(mobileExpanded === "community" ? null : "community")}
-                  className="flex items-center justify-between py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
-                >
-                  <span>Community</span>
-                  <ChevronDown className={cn("h-4 w-4 transition-transform", mobileExpanded === "community" && "rotate-180")} />
-                </button>
-                <AnimatePresence>
-                  {mobileExpanded === "community" && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-2">
-                      {communityLinks.map((item) => (
-                        <Link key={item.label} to={item.to} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
-                          <item.icon className="h-4 w-4 text-primary" />
-                          {item.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Mobile Company Accordion */}
-                <button
-                  onClick={() => setMobileExpanded(mobileExpanded === "company" ? null : "company")}
-                  className="flex items-center justify-between py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
-                >
-                  <span>Company</span>
-                  <ChevronDown className={cn("h-4 w-4 transition-transform", mobileExpanded === "company" && "rotate-180")} />
-                </button>
-                <AnimatePresence>
-                  {mobileExpanded === "company" && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-2">
-                      {companyLinks.map((item) => (
-                        <Link key={item.label} to={item.to} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
-                          <item.icon className="h-4 w-4 text-primary" />
-                          {item.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                          {getLinks(section.key).map((item) => (
+                            <Link
+                              key={item.label}
+                              to={item.to}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
+                            >
+                              <item.icon className="h-4 w-4 text-primary" />
+                              {item.label}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
 
                 <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
                   Pricing
