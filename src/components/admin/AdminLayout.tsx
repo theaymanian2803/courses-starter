@@ -51,6 +51,7 @@ const adminNavItems = [
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
   { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
   { title: "Instructors", url: "/admin/instructors", icon: GraduationCap },
+  { title: "Social Links", url: "/admin/social-links", icon: Share2 },
 ];
 
 function AdminSidebar() {
