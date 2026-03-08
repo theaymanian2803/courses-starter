@@ -42,8 +42,6 @@ const companyLinks = [
 
 const megaSections = [
   { key: "courses" as const, label: "Courses" },
-  { key: "resources" as const, label: "Resources" },
-  { key: "community" as const, label: "Community" },
   { key: "company" as const, label: "Company" },
 ];
 
