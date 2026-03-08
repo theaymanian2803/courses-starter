@@ -1,36 +1,106 @@
-import { Code2 } from "lucide-react";
+import { Code2, BookMarked, Newspaper, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Trophy, Heart, Globe, Star } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const resourceLinks = [
+  { icon: BookMarked, label: "Blog", to: "/courses" },
+  { icon: Newspaper, label: "Changelog", to: "/features" },
+  { icon: Youtube, label: "YouTube", to: "/courses" },
+  { icon: Podcast, label: "Podcast", to: "/courses" },
+  { icon: Github, label: "Open Source", to: "/courses" },
+  { icon: BookOpen, label: "Documentation", to: "/courses" },
+];
+
+const communityLinks = [
+  { icon: MessageSquare, label: "Discord Server", to: "/courses" },
+  { icon: Users, label: "Student Forum", to: "/courses" },
+  { icon: Trophy, label: "Leaderboard", to: "/courses" },
+  { icon: Heart, label: "Mentorship", to: "/courses" },
+  { icon: Globe, label: "Events", to: "/courses" },
+  { icon: Star, label: "Success Stories", to: "/about" },
+];
+
+const companyLinks = [
+  { label: "Courses", to: "/courses" },
+  { label: "Features", to: "/features" },
+  { label: "About", to: "/about" },
+  { label: "FAQ", to: "/faq" },
+  { label: "Contact", to: "/contact" },
+  { label: "Policies", to: "/policies" },
+];
 
 export const Footer = () => {
   return (
-    <footer className="py-12 bg-muted/10 border-t border-border">
+    <footer className="py-16 bg-muted/10 border-t border-border">
       <div className="container px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Code2 className="h-4 w-4 text-primary" />
-            </div>
-            <span className="text-lg font-bold text-foreground">
-              Unc Code <span className="text-primary">Academy</span>
-            </span>
-          </Link>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Brand */}
+          <div className="space-y-4">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Code2 className="h-4 w-4 text-primary" />
+              </div>
+              <span className="text-lg font-bold text-foreground">
+                Unc Code <span className="text-primary">Academy</span>
+              </span>
+            </Link>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Learn to code with hands-on projects and expert instructors. Join thousands of developers building the future.
+            </p>
+          </div>
 
-          {/* Links */}
-          <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <Link to="/courses" className="hover:text-foreground transition-colors">Courses</Link>
-            <Link to="/features" className="hover:text-foreground transition-colors">Features</Link>
-            <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
-            <Link to="/faq" className="hover:text-foreground transition-colors">FAQ</Link>
-            <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
-            <Link to="/policies" className="hover:text-foreground transition-colors">Policies</Link>
-            <Link to="/auth" className="hover:text-foreground transition-colors">Sign In</Link>
-          </nav>
+          {/* Company */}
+          <div>
+            <h4 className="text-sm font-semibold text-foreground mb-4">Company</h4>
+            <ul className="space-y-2.5">
+              {companyLinks.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.to} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          {/* Copyright */}
+          {/* Resources */}
+          <div>
+            <h4 className="text-sm font-semibold text-foreground mb-4">Resources</h4>
+            <ul className="space-y-2.5">
+              {resourceLinks.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.to} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <link.icon className="h-3.5 w-3.5" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Community */}
+          <div>
+            <h4 className="text-sm font-semibold text-foreground mb-4">Community</h4>
+            <ul className="space-y-2.5">
+              {communityLinks.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.to} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <link.icon className="h-3.5 w-3.5" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Unc Code Academy. All rights reserved.
           </p>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <Link to="/auth" className="hover:text-foreground transition-colors">Sign In</Link>
+          </div>
         </div>
       </div>
     </footer>

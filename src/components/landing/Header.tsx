@@ -3,10 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Code2, Menu, X, LogOut, ChevronDown,
-  BookOpen, Layers, Zap, Users, HelpCircle,
+  BookOpen, Layers, Zap, Users,HelpCircle,
   Mail, Shield, Star, GraduationCap, Sparkles,
-  MessageSquare, Github, Youtube, BookMarked, Newspaper,
-  Podcast, Trophy, Heart, Globe, User, ShoppingBag, CreditCard, LayoutDashboard
+  User, ShoppingBag, CreditCard, LayoutDashboard
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type MegaMenuKey = "courses" | "resources" | "community" | "company" | null;
+type MegaMenuKey = "courses" | "company" | null;
 
 const courseLinks = [
   { icon: BookOpen, label: "Browse Courses", desc: "Explore our full catalog", to: "/courses" },
@@ -31,23 +30,6 @@ const courseLinks = [
   { icon: GraduationCap, label: "Learning Paths", desc: "Structured roadmaps", to: "/courses" },
 ];
 
-const resourceLinks = [
-  { icon: BookMarked, label: "Blog", desc: "Tutorials, tips & insights", to: "/courses" },
-  { icon: Newspaper, label: "Changelog", desc: "Latest updates & releases", to: "/features" },
-  { icon: Youtube, label: "YouTube", desc: "Free video tutorials", to: "/courses" },
-  { icon: Podcast, label: "Podcast", desc: "Weekly dev conversations", to: "/courses" },
-  { icon: Github, label: "Open Source", desc: "Contribute on GitHub", to: "/courses" },
-  { icon: BookOpen, label: "Documentation", desc: "Guides & API references", to: "/courses" },
-];
-
-const communityLinks = [
-  { icon: MessageSquare, label: "Discord Server", desc: "Chat with fellow learners", to: "/courses" },
-  { icon: Users, label: "Student Forum", desc: "Ask questions & share", to: "/courses" },
-  { icon: Trophy, label: "Leaderboard", desc: "Top contributors & streaks", to: "/courses" },
-  { icon: Heart, label: "Mentorship", desc: "1-on-1 guidance from pros", to: "/courses" },
-  { icon: Globe, label: "Events", desc: "Meetups, hackathons & more", to: "/courses" },
-  { icon: Star, label: "Success Stories", desc: "Hear from our graduates", to: "/about" },
-];
 
 const companyLinks = [
   { icon: Users, label: "About Us", desc: "Our mission & team", to: "/about" },
@@ -59,8 +41,6 @@ const companyLinks = [
 
 const megaSections = [
   { key: "courses" as const, label: "Courses" },
-  { key: "resources" as const, label: "Resources" },
-  { key: "community" as const, label: "Community" },
   { key: "company" as const, label: "Company" },
 ];
 
@@ -128,8 +108,6 @@ export const Header = () => {
   const getLinks = (key: MegaMenuKey) => {
     switch (key) {
       case "courses": return courseLinks;
-      case "resources": return resourceLinks;
-      case "community": return communityLinks;
       case "company": return companyLinks;
       default: return [];
     }
@@ -165,30 +143,6 @@ export const Header = () => {
           <p className="text-xs text-muted-foreground mb-3">Master the basics of AI & machine learning in 4 weeks.</p>
           <Button asChild size="sm" className="w-fit">
             <Link to="/courses" onClick={() => setActiveMega(null)}>Explore</Link>
-          </Button>
-        </div>
-      );
-    }
-    if (activeMega === "resources") {
-      return (
-        <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/10 p-5">
-          <Newspaper className="h-8 w-8 text-primary mb-3" />
-          <p className="text-sm font-semibold text-foreground mb-1">Latest on the Blog</p>
-          <p className="text-xs text-muted-foreground mb-3">Build a full-stack app with React & cloud backends in 2026.</p>
-          <Button asChild size="sm" variant="outline" className="w-fit">
-            <Link to="/courses" onClick={() => setActiveMega(null)}>Read More</Link>
-          </Button>
-        </div>
-      );
-    }
-    if (activeMega === "community") {
-      return (
-        <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/10 p-5">
-          <MessageSquare className="h-8 w-8 text-primary mb-3" />
-          <p className="text-sm font-semibold text-foreground mb-1">Join 5,000+ Devs</p>
-          <p className="text-xs text-muted-foreground mb-3">Our Discord community is the best place to learn, share, and grow.</p>
-          <Button asChild size="sm" className="w-fit">
-            <Link to="/courses" onClick={() => setActiveMega(null)}>Join Discord</Link>
           </Button>
         </div>
       );
@@ -345,7 +299,7 @@ export const Header = () => {
                   <div className="flex gap-8">
                     <div className="flex-1">
                       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                        {activeMega === "courses" ? "Learn" : activeMega === "resources" ? "Resources" : activeMega === "community" ? "Community" : "Company"}
+                        {activeMega === "courses" ? "Learn" : "Company"}
                       </p>
                       {renderMegaLinks(getLinks(activeMega))}
                     </div>
