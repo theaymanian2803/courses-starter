@@ -30,6 +30,7 @@ import {
   Package,
   Sparkles,
   Crown,
+  MessageSquareQuote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
