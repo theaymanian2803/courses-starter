@@ -3,8 +3,9 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Code2, ArrowLeft, Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Header } from "@/components/landing/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -53,7 +54,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 gradient-hero">
+    <div className="min-h-screen bg-background gradient-hero">
+      <Header />
+      <div className="flex items-center justify-center p-4 pt-32">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
@@ -66,27 +69,8 @@ const Auth = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
-        {/* Back button */}
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to home
-        </Link>
-
         {/* Card */}
         <div className="glass-strong rounded-2xl p-8">
-          {/* Logo */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Code2 className="h-6 w-6 text-primary" />
-            </div>
-            <span className="text-2xl font-bold text-foreground">
-              Unc Code <span className="text-primary">Academy</span>
-            </span>
-          </div>
-
           {/* Title */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-foreground mb-2">
@@ -173,6 +157,7 @@ const Auth = () => {
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 };
