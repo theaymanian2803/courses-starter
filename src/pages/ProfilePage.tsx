@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Camera, Save, ArrowLeft, Mail, Calendar } from "lucide-react";
+import { Loader2, Camera, Save, ArrowLeft, Mail, Calendar, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -23,6 +23,11 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isEmailUser, setIsEmailUser] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -32,6 +37,10 @@ const ProfilePage = () => {
         return;
       }
       setUser(session.user);
+      
+      // Check if user signed up with email (not OAuth)
+      const provider = session.user.app_metadata?.provider;
+      setIsEmailUser(provider === "email");
 
       const { data: profileData } = await supabase
         .from("profiles")
@@ -60,6 +69,42 @@ const ProfilePage = () => {
     init();
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const handleChangePassword = async () => {
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      // Verify current password by re-signing in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (signInError) {
+        toast.error("Current password is incorrect");
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+
+      toast.success("Password updated successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update password");
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -247,6 +292,67 @@ const ProfilePage = () => {
                 )}
                 Save Changes
               </Button>
+
+              {/* Password Change Section */}
+              {isEmailUser && (
+                <>
+                  <Separator />
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      <Lock className="h-5 w-5 text-muted-foreground" />
+                      Change Password
+                    </h3>
+                    <div className="space-y-2">
+                      <Label htmlFor="currentPassword">Current Password</Label>
+                      <Input
+                        id="currentPassword"
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="bg-muted/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="newPassword">New Password</Label>
+                      <Input
+                        id="newPassword"
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="••••••••"
+                        minLength={6}
+                        className="bg-muted/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••"
+                        minLength={6}
+                        className="bg-muted/50"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleChangePassword}
+                      disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
+                      variant="outline"
+                      className="w-full py-6"
+                    >
+                      {isChangingPassword ? (
+                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                      ) : (
+                        <Lock className="h-5 w-5 mr-2" />
+                      )}
+                      Update Password
+                    </Button>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </motion.div>
