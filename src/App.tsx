@@ -31,6 +31,7 @@ import AdminTiers from "./pages/admin/AdminTiers";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminInstructors from "./pages/admin/AdminInstructors";
 import AdminSocialLinks from "./pages/admin/AdminSocialLinks";
+import AdminLandingLayout from "./pages/admin/AdminLandingLayout";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="testimonials" element={<AdminTestimonials />} />
               <Route path="instructors" element={<AdminInstructors />} />
               <Route path="social-links" element={<AdminSocialLinks />} />
+              <Route path="landing-layout" element={<AdminLandingLayout />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

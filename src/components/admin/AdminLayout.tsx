@@ -39,19 +39,26 @@ import { Input } from "@/components/ui/input";
 
 const ADMIN_ACCESS_CODE = "123123";
 
-const adminNavItems = [
-  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+const landingPageNavItems = [
+  { title: "Layout", url: "/admin/landing-layout", icon: LayoutDashboard },
+  { title: "Hero", url: "/admin", icon: Sparkles },
+  { title: "Instructors", url: "/admin/instructors", icon: GraduationCap },
+  { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
+  { title: "Social Links", url: "/admin/social-links", icon: Share2 },
+];
+
+const contentNavItems = [
   { title: "Courses", url: "/admin/courses", icon: BookOpen },
   { title: "Modules", url: "/admin/modules", icon: Layers },
   { title: "Lessons", url: "/admin/lessons", icon: PlayCircle },
   { title: "Bundles", url: "/admin/bundles", icon: Package },
   { title: "Upsells", url: "/admin/upsells", icon: Sparkles },
   { title: "Tiers", url: "/admin/tiers", icon: Crown },
-  { title: "Users", url: "/admin/users", icon: Users },
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
-  { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
-  { title: "Instructors", url: "/admin/instructors", icon: GraduationCap },
-  { title: "Social Links", url: "/admin/social-links", icon: Share2 },
+];
+
+const systemNavItems = [
+  { title: "Users", url: "/admin/users", icon: Users },
 ];
 
 function AdminSidebar() {
@@ -73,28 +80,34 @@ function AdminSidebar() {
           </Link>
         </div>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {adminNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      end={item.url === "/admin"}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 transition-colors"
-                      activeClassName="bg-primary/10 text-primary font-medium"
-                    >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {[
+          { label: "Landing Page", items: landingPageNavItems },
+          { label: "Content", items: contentNavItems },
+          { label: "System", items: systemNavItems },
+        ].map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to={item.url} 
+                        end={item.url === "/admin"}
+                        className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 transition-colors"
+                        activeClassName="bg-primary/10 text-primary font-medium"
+                      >
+                        <item.icon className="h-4 w-4 shrink-0" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   );

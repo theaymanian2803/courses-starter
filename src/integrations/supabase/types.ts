@@ -299,6 +299,33 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_page_sections: {
+        Row: {
+          id: string
+          is_visible: boolean
+          section_key: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          is_visible?: boolean
+          section_key: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          is_visible?: boolean
+          section_key?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lesson_comments: {
         Row: {
           content: string
