@@ -31,6 +31,7 @@ import AdminTiers from "./pages/admin/AdminTiers";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminInstructors from "./pages/admin/AdminInstructors";
 import AdminSocialLinks from "./pages/admin/AdminSocialLinks";
+import AdminLandingLayout from "./pages/admin/AdminLandingLayout";
 
 const queryClient = new QueryClient();
 
