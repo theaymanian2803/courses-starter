@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, Clock, Users } from "lucide-react";
+import { BookOpen, Clock, Users, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { EnrollModal } from "@/components/checkout/EnrollModal";
 
 type Course = {
   id: string;
@@ -16,6 +18,7 @@ type Course = {
 
 export function Courses() {
   const navigate = useNavigate();
+  const [enrollCourse, setEnrollCourse] = useState<Course | null>(null);
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["courses"],
@@ -138,13 +141,25 @@ export function Courses() {
                 </div>
               </CardContent>
 
-              <CardFooter className="pt-0">
+              <CardFooter className="pt-0 gap-2">
                 <Button
                   onClick={() => handleViewCourse(course.id)}
-                  className="w-full"
+                  variant="outline"
+                  className="flex-1"
                   size="lg"
                 >
                   View Course
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEnrollCourse(course);
+                  }}
+                  className="flex-1"
+                  size="lg"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Enroll
                 </Button>
               </CardFooter>
             </Card>
