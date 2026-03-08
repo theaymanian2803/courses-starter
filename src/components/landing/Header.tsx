@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Code2, Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Code2, Menu, X, LogOut, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +20,28 @@ export const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    navigate("/");
+  };
+
+  const userInitials = user?.user_metadata?.full_name
+    ?.split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .toUpperCase() || "U";
 
   return (
     <motion.header
@@ -65,12 +91,31 @@ export const Header = () => {
             >
               Pricing
             </a>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/auth">Sign In</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to="/auth">Get Started</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    <AvatarFallback className="text-xs">{userInitials}</AvatarFallback>
+                  </Avatar>
+                  <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link to="/auth">Get Started</Link>
+                </Button>
+              </>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -103,14 +148,25 @@ export const Header = () => {
               <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors py-2">
                 Pricing
               </a>
-              <div className="flex gap-2 pt-2">
-                <Button asChild variant="outline" size="sm" className="flex-1">
-                  <Link to="/auth">Sign In</Link>
-                </Button>
-                <Button asChild size="sm" className="flex-1">
-                  <Link to="/auth">Get Started</Link>
-                </Button>
-              </div>
+              {user ? (
+                <div className="flex gap-2 pt-2">
+                  <Button asChild variant="outline" size="sm" className="flex-1">
+                    <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
+                  </Button>
+                  <Button size="sm" className="flex-1" onClick={() => { handleSignOut(); setIsMobileMenuOpen(false); }}>
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2 pt-2">
+                  <Button asChild variant="outline" size="sm" className="flex-1">
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+                  </Button>
+                  <Button asChild size="sm" className="flex-1">
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
+                  </Button>
+                </div>
+              )}
             </nav>
           </motion.div>
         )}
