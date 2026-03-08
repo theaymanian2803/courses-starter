@@ -66,6 +66,7 @@ export const Hero = () => {
   ];
 
   return (
+    <>
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero">
       {/* Background */}
       {h.background_image_url ? (
