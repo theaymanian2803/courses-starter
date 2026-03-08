@@ -20,6 +20,7 @@ type Course = {
 export function Courses() {
   const navigate = useNavigate();
   const [enrollCourse, setEnrollCourse] = useState<Course | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["courses"],
