@@ -21,7 +21,8 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
- import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { NotificationBell } from "@/components/NotificationBell";
 
 interface Lesson {
   id: string;
