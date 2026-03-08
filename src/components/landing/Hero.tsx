@@ -137,7 +137,7 @@ export const Hero = () => {
             transition={{ delay: 0.6, duration: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
           >
-            <Button asChild size="lg" className="text-lg px-8 py-6 box-glow font-semibold">
+            <Button asChild size="lg" className="text-lg px-8 py-6 font-semibold">
               <Link to="/auth">
                 {h.cta_primary_text}
                 <ArrowRight className="ml-2 h-5 w-5" />
