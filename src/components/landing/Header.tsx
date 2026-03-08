@@ -221,10 +221,11 @@ export const Header = () => {
               >
                 <button
                   className={cn(
-                    "inline-flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-md transition-colors",
+                    "relative inline-flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-md transition-colors",
+                    "after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-0.5 after:bg-primary after:rounded-full after:transition-all after:duration-300",
                     activeMega === section.key
-                      ? "text-foreground bg-secondary/50"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                      ? "text-foreground bg-secondary/50 after:w-5 after:opacity-100"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/30 after:w-0 after:opacity-0 hover:after:w-5 hover:after:opacity-100"
                   )}
                   onClick={() => setActiveMega(activeMega === section.key ? null : section.key)}
                 >
@@ -236,7 +237,7 @@ export const Header = () => {
 
             <a
               href="#pricing"
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
+              className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-0.5 after:bg-primary after:rounded-full after:transition-all after:duration-300 after:w-0 after:opacity-0 hover:after:w-5 hover:after:opacity-100"
             >
               Pricing
             </a>
