@@ -1,53 +1,35 @@
-import { Star } from "lucide-react";
+import { Star, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-const testimonials = [
-  {
-    name: "Marcus Johnson",
-    initials: "MJ",
-    role: "Full-Stack Developer",
-    rating: 5,
-    text: "This platform completely transformed my career. The structured curriculum and hands-on projects gave me the confidence to land my dream job within 3 months.",
-  },
-  {
-    name: "Sarah Chen",
-    initials: "SC",
-    role: "Frontend Engineer",
-    rating: 5,
-    text: "The instructors break down complex concepts into digestible lessons. I went from zero coding experience to building production-ready apps. Absolutely worth every penny.",
-  },
-  {
-    name: "David Okafor",
-    initials: "DO",
-    role: "Software Engineer",
-    rating: 4,
-    text: "The community and mentorship here are unmatched. Whenever I got stuck, there was always someone to help. The course quality rivals bootcamps costing 10x more.",
-  },
-  {
-    name: "Emily Rodriguez",
-    initials: "ER",
-    role: "Junior Developer",
-    rating: 5,
-    text: "I tried multiple online platforms before finding this one. The difference is night and day — real projects, real feedback, and real results on my resume.",
-  },
-  {
-    name: "James Wright",
-    initials: "JW",
-    role: "Tech Lead",
-    rating: 5,
-    text: "Even as an experienced developer, I found immense value in the advanced courses. Great for upskilling and staying current with modern technologies.",
-  },
-  {
-    name: "Aisha Patel",
-    initials: "AP",
-    role: "Career Switcher",
-    rating: 5,
-    text: "Coming from a non-tech background, I was intimidated. But the beginner-friendly approach made learning enjoyable. Now I'm a confident developer with a new career.",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Testimonials = () => {
+  const { data: testimonials, isLoading } = useQuery({
+    queryKey: ["testimonials"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("testimonials")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-20 px-4 bg-secondary/30">
+        <div className="flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (!testimonials?.length) return null;
+
   return (
     <section className="py-20 px-4 bg-secondary/30">
       <div className="max-w-6xl mx-auto">
@@ -66,7 +48,7 @@ export const Testimonials = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map((t) => (
             <Card
-              key={t.name}
+              key={t.id}
               className="border-border/50 bg-card hover:shadow-lg transition-shadow duration-300"
             >
               <CardContent className="p-6">

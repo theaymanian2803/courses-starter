@@ -28,6 +28,7 @@ import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminBundles from "./pages/admin/AdminBundles";
 import AdminUpsells from "./pages/admin/AdminUpsells";
 import AdminTiers from "./pages/admin/AdminTiers";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="tiers" element={<AdminTiers />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="coupons" element={<AdminCoupons />} />
+              <Route path="testimonials" element={<AdminTestimonials />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
