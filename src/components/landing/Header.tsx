@@ -3,10 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Code2, Menu, X, LogOut, ChevronDown,
-  BookOpen, Layers, Zap, Users, HelpCircle,
+  BookOpen, Layers, Zap, Users,HelpCircle,
   Mail, Shield, Star, GraduationCap, Sparkles,
-  MessageSquare, Github, Youtube, BookMarked, Newspaper,
-  Podcast, Trophy, Heart, Globe, User, ShoppingBag, CreditCard, LayoutDashboard
+  User, ShoppingBag, CreditCard, LayoutDashboard
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link, useNavigate } from "react-router-dom";
