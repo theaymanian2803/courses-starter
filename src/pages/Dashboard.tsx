@@ -21,7 +21,8 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
- import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { NotificationBell } from "@/components/NotificationBell";
 
 interface Lesson {
   id: string;
@@ -365,7 +366,8 @@ const Dashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              <NotificationBell userId={user.id} />
               <Button asChild variant="outline" size="sm" className="flex-1">
                 <Link to="/">
                   <Home className="h-4 w-4 mr-1" />
