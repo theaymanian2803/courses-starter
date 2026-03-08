@@ -161,11 +161,9 @@ export const Hero = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 group border-border/50">
-              <a href="#curriculum">
+            <Button variant="outline" size="lg" className="text-lg px-8 py-6 group border-border/50" onClick={() => setShowCurriculum(true)}>
                 <Play className="mr-2 h-5 w-5 group-hover:text-primary transition-colors" />
                 {h.cta_secondary_text}
-              </a>
             </Button>
           </motion.div>
 
