@@ -47,6 +47,7 @@ const adminNavItems = [
   { title: "Tiers", url: "/admin/tiers", icon: Crown },
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
+  { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
 ];
 
 function AdminSidebar() {
