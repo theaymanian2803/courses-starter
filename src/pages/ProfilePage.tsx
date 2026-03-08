@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Camera, Save, ArrowLeft, Mail, Calendar } from "lucide-react";
+import { Loader2, Camera, Save, ArrowLeft, Mail, Calendar, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
