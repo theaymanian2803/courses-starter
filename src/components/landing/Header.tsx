@@ -8,6 +8,7 @@ import {
   MessageSquare, Github, Youtube, BookMarked, Newspaper,
   Podcast, Trophy, Heart, Globe, User, ShoppingBag, CreditCard, LayoutDashboard
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
