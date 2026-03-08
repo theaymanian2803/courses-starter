@@ -89,7 +89,7 @@ const ProfilePage = () => {
           <p className="text-muted-foreground mb-8">Manage your orders, courses, progress, and profile settings.</p>
 
           <Tabs defaultValue="orders" className="w-full">
-            <TabsList className="w-full grid grid-cols-4 mb-8">
+            <TabsList className="w-full grid grid-cols-5 mb-8">
               <TabsTrigger value="orders" className="gap-2">
                 <ShoppingBag className="h-4 w-4" />
                 <span className="hidden sm:inline">Orders</span>
@@ -101,6 +101,10 @@ const ProfilePage = () => {
               <TabsTrigger value="progress" className="gap-2">
                 <TrendingUp className="h-4 w-4" />
                 <span className="hidden sm:inline">Progress</span>
+              </TabsTrigger>
+              <TabsTrigger value="subscription" className="gap-2">
+                <CreditCard className="h-4 w-4" />
+                <span className="hidden sm:inline">Subscription</span>
               </TabsTrigger>
               <TabsTrigger value="profile" className="gap-2">
                 <User className="h-4 w-4" />
@@ -118,6 +122,10 @@ const ProfilePage = () => {
 
             <TabsContent value="progress">
               <MyProgress userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="subscription">
+              <MySubscription userId={user.id} />
             </TabsContent>
 
             <TabsContent value="profile">
