@@ -39,19 +39,26 @@ import { Input } from "@/components/ui/input";
 
 const ADMIN_ACCESS_CODE = "123123";
 
-const adminNavItems = [
-  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+const landingPageNavItems = [
+  { title: "Layout", url: "/admin/landing-layout", icon: LayoutDashboard },
+  { title: "Hero", url: "/admin", icon: Sparkles },
+  { title: "Instructors", url: "/admin/instructors", icon: GraduationCap },
+  { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
+  { title: "Social Links", url: "/admin/social-links", icon: Share2 },
+];
+
+const contentNavItems = [
   { title: "Courses", url: "/admin/courses", icon: BookOpen },
   { title: "Modules", url: "/admin/modules", icon: Layers },
   { title: "Lessons", url: "/admin/lessons", icon: PlayCircle },
   { title: "Bundles", url: "/admin/bundles", icon: Package },
   { title: "Upsells", url: "/admin/upsells", icon: Sparkles },
   { title: "Tiers", url: "/admin/tiers", icon: Crown },
-  { title: "Users", url: "/admin/users", icon: Users },
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
-  { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
-  { title: "Instructors", url: "/admin/instructors", icon: GraduationCap },
-  { title: "Social Links", url: "/admin/social-links", icon: Share2 },
+];
+
+const systemNavItems = [
+  { title: "Users", url: "/admin/users", icon: Users },
 ];
 
 function AdminSidebar() {
