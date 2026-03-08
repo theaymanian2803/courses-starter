@@ -326,6 +326,48 @@ export const Header = () => {
                   )}
                 </AnimatePresence>
 
+                {/* Mobile Resources Accordion */}
+                <button
+                  onClick={() => setMobileExpanded(mobileExpanded === "resources" ? null : "resources")}
+                  className="flex items-center justify-between py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
+                >
+                  <span>Resources</span>
+                  <ChevronDown className={cn("h-4 w-4 transition-transform", mobileExpanded === "resources" && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {mobileExpanded === "resources" && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-2">
+                      {resourceLinks.map((item) => (
+                        <Link key={item.label} to={item.to} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
+                          <item.icon className="h-4 w-4 text-primary" />
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Mobile Community Accordion */}
+                <button
+                  onClick={() => setMobileExpanded(mobileExpanded === "community" ? null : "community")}
+                  className="flex items-center justify-between py-2.5 px-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
+                >
+                  <span>Community</span>
+                  <ChevronDown className={cn("h-4 w-4 transition-transform", mobileExpanded === "community" && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {mobileExpanded === "community" && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-2">
+                      {communityLinks.map((item) => (
+                        <Link key={item.label} to={item.to} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
+                          <item.icon className="h-4 w-4 text-primary" />
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Mobile Company Accordion */}
                 <button
                   onClick={() => setMobileExpanded(mobileExpanded === "company" ? null : "company")}
@@ -336,19 +378,9 @@ export const Header = () => {
                 </button>
                 <AnimatePresence>
                   {mobileExpanded === "company" && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden pl-2"
-                    >
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-2">
                       {companyLinks.map((item) => (
-                        <Link
-                          key={item.label}
-                          to={item.to}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30"
-                        >
+                        <Link key={item.label} to={item.to} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
                           <item.icon className="h-4 w-4 text-primary" />
                           {item.label}
                         </Link>
