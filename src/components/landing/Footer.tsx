@@ -1,4 +1,4 @@
-import { Code2, BookMarked, Newspaper, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Trophy, Heart, Globe, Star } from "lucide-react";
+import { Code2, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const resourceLinks = [
