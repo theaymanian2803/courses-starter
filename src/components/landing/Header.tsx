@@ -91,12 +91,31 @@ export const Header = () => {
             >
               Pricing
             </a>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/auth">Sign In</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to="/auth">Get Started</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    <AvatarFallback className="text-xs">{userInitials}</AvatarFallback>
+                  </Avatar>
+                  <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link to="/auth">Get Started</Link>
+                </Button>
+              </>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
