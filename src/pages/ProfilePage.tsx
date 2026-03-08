@@ -15,6 +15,8 @@ import { ProfileSettings } from "@/components/account/ProfileSettings";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "orders";
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<{ full_name: string; avatar_url: string | null }>({
     full_name: "",
