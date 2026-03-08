@@ -38,6 +38,17 @@ export function Courses() {
     navigate(`/course/${courseId}`);
   };
 
+  const filteredCourses = useMemo(() => {
+    if (!courses) return [];
+    if (!searchQuery.trim()) return courses;
+    const q = searchQuery.toLowerCase();
+    return courses.filter(
+      (c) =>
+        c.title.toLowerCase().includes(q) ||
+        (c.description && c.description.toLowerCase().includes(q))
+    );
+  }, [courses, searchQuery]);
+
   if (isLoading) {
     return (
       <section id="courses" className="py-20 bg-muted/30">
