@@ -329,6 +329,23 @@ export default function HeroControls() {
                   </span>
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label>Overlay Opacity</Label>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={[Math.round((Number(displayForm?.overlay_opacity ?? 0.3)) * 100)]}
+                    onValueChange={([v]) => updateField("overlay_opacity", String(v / 100))}
+                    className="flex-1"
+                  />
+                  <span className="text-sm font-mono text-muted-foreground w-12 text-right">
+                    {Math.round((Number(displayForm?.overlay_opacity ?? 0.3)) * 100)}%
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">Controls how much the fade overlay covers the image. 0% = fully visible, 100% = fully hidden.</p>
+              </div>
             </div>
 
             <Button onClick={handleSave} disabled={saveMutation.isPending} className="w-full py-5 box-glow">
