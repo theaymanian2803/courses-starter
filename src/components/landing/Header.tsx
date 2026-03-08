@@ -6,12 +6,20 @@ import {
   BookOpen, Layers, Zap, Users, HelpCircle,
   Mail, Shield, Star, GraduationCap, Sparkles,
   MessageSquare, Github, Youtube, BookMarked, Newspaper,
-  Podcast, Trophy, Heart, Globe
+  Podcast, Trophy, Heart, Globe, User, ShoppingBag, CreditCard, LayoutDashboard
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type MegaMenuKey = "courses" | "resources" | "community" | "company" | null;
 
@@ -247,20 +255,55 @@ export const Header = () => {
             {user ? (
               <div className="flex items-center gap-2">
                 <Button asChild variant="outline" size="sm">
-                  <Link to="/dashboard">Dashboard</Link>
-                </Button>
-                <Button asChild variant="ghost" size="sm">
-                  <Link to="/profile" className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={user.user_metadata?.avatar_url} />
-                      <AvatarFallback className="text-[10px]">{userInitials}</AvatarFallback>
-                    </Avatar>
-                    My Account
+                  <Link to="/dashboard">
+                    <LayoutDashboard className="h-4 w-4 mr-1.5" />
+                    Dashboard
                   </Link>
                 </Button>
-                <button onClick={handleSignOut} className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary/30">
-                  <LogOut className="h-4 w-4" />
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={user.user_metadata?.avatar_url} />
+                        <AvatarFallback className="text-[10px]">{userInitials}</AvatarFallback>
+                      </Avatar>
+                      My Account
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-52">
+                    <DropdownMenuLabel className="font-normal">
+                      <p className="text-sm font-medium truncate">{user.user_metadata?.full_name || user.email}</p>
+                      {user.user_metadata?.full_name && (
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      )}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile?tab=orders" className="flex items-center gap-2 cursor-pointer">
+                        <ShoppingBag className="h-4 w-4" />
+                        My Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile?tab=subscription" className="flex items-center gap-2 cursor-pointer">
+                        <CreditCard className="h-4 w-4" />
+                        Subscription
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <div className="flex items-center gap-2">

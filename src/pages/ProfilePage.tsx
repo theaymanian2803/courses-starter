@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/landing/Header";
@@ -15,6 +15,8 @@ import { ProfileSettings } from "@/components/account/ProfileSettings";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "orders";
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<{ full_name: string; avatar_url: string | null }>({
     full_name: "",
@@ -88,7 +90,7 @@ const ProfilePage = () => {
           <h1 className="text-3xl font-bold text-foreground mb-2">My Account</h1>
           <p className="text-muted-foreground mb-8">Manage your orders, courses, progress, and profile settings.</p>
 
-          <Tabs defaultValue="orders" className="w-full">
+          <Tabs defaultValue={initialTab} className="w-full">
             <TabsList className="w-full grid grid-cols-5 mb-8">
               <TabsTrigger value="orders" className="gap-2">
                 <ShoppingBag className="h-4 w-4" />
