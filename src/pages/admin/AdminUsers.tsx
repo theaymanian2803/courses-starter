@@ -26,7 +26,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, User, Crown, ShieldCheck, UserPlus, Trash2, Search } from "lucide-react";
+import { Loader2, User, Crown, ShieldCheck, UserPlus, Trash2, Search, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -94,6 +94,15 @@ export default function AdminUsers() {
     },
   });
 
+  const { data: emails } = useQuery({
+    queryKey: ["adminUserEmails"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_user_emails");
+      if (error) throw error;
+      return data as { user_id: string; email: string }[];
+    },
+  });
+
   const { data: roles } = useQuery({
     queryKey: ["adminUserRoles"],
     queryFn: async () => {
@@ -152,10 +161,16 @@ export default function AdminUsers() {
     return roles?.filter((r) => r.user_id === userId) || [];
   };
 
+  const getUserEmail = (userId: string) => {
+    return emails?.find((e) => e.user_id === userId)?.email || null;
+  };
+
   const filteredProfiles = profiles?.filter((profile) => {
     if (!searchQuery) return true;
     const name = (profile.full_name || "").toLowerCase();
-    return name.includes(searchQuery.toLowerCase());
+    const email = (getUserEmail(profile.user_id) || "").toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return name.includes(query) || email.includes(query);
   });
 
   const roleIcon = (role: string) => {
@@ -174,7 +189,7 @@ export default function AdminUsers() {
         <div className="relative w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search by name..."
+            placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -219,9 +234,17 @@ export default function AdminUsers() {
                               <User className="h-4 w-4 text-muted-foreground" />
                             )}
                           </div>
-                          <span className="font-medium">
-                            {profile.full_name || "Unnamed User"}
-                          </span>
+                          <div>
+                            <span className="font-medium">
+                              {profile.full_name || "Unnamed User"}
+                            </span>
+                            {getUserEmail(profile.user_id) && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Mail className="h-3 w-3" />
+                                {getUserEmail(profile.user_id)}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
