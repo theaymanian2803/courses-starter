@@ -8,6 +8,7 @@ import {
   MessageSquare, Github, Youtube, BookMarked, Newspaper,
   Podcast, Trophy, Heart, Globe, User, ShoppingBag, CreditCard, LayoutDashboard
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -250,6 +251,7 @@ export const Header = () => {
               Pricing
             </a>
 
+            <ThemeToggle />
             <div className="w-px h-6 bg-border mx-2" />
 
             {user ? (
@@ -403,6 +405,10 @@ export const Header = () => {
                   Pricing
                 </a>
 
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-sm text-muted-foreground">Theme</span>
+                  <ThemeToggle />
+                </div>
                 <div className="h-px bg-border my-2" />
 
                 {user ? (
