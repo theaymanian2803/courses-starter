@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, Clock, Users, ShoppingCart, Search, X } from "lucide-react";
+import { BookOpen, Clock, Users, ShoppingCart, Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EnrollModal } from "@/components/checkout/EnrollModal";
 
