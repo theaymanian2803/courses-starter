@@ -112,6 +112,30 @@ export function EnrollModal({
         return;
       }
 
+      // Handle free enrollment (100% discount)
+      if (discountedPrice <= 0) {
+        const { error: purchaseError } = await supabase
+          .from("purchases")
+          .insert({ course_id: course.id, user_id: session.user.id });
+
+        if (purchaseError) {
+          if (purchaseError.code === "23505") {
+            toast.info("You already own this course!");
+          } else {
+            throw purchaseError;
+          }
+        } else {
+          // Increment coupon usage
+          if (appliedCoupon?.code) {
+            await supabase.rpc("increment_coupon_usage", { _code: appliedCoupon.code });
+          }
+          toast.success("🎉 You're enrolled! Enjoy the course.");
+        }
+        onOpenChange(false);
+        navigate(`/course/${course.id}`);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke(
         "create-paypal-order",
         {
