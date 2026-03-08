@@ -251,6 +251,7 @@ export const Header = () => {
               Pricing
             </a>
 
+            <ThemeToggle />
             <div className="w-px h-6 bg-border mx-2" />
 
             {user ? (
