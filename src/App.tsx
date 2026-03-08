@@ -30,6 +30,7 @@ import AdminUpsells from "./pages/admin/AdminUpsells";
 import AdminTiers from "./pages/admin/AdminTiers";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminInstructors from "./pages/admin/AdminInstructors";
+import AdminSocialLinks from "./pages/admin/AdminSocialLinks";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => (
               <Route path="coupons" element={<AdminCoupons />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
               <Route path="instructors" element={<AdminInstructors />} />
+              <Route path="social-links" element={<AdminSocialLinks />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

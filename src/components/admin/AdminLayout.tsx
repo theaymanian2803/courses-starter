@@ -32,6 +32,7 @@ import {
   Crown,
   MessageSquareQuote,
   GraduationCap,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,7 @@ const adminNavItems = [
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
   { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
   { title: "Instructors", url: "/admin/instructors", icon: GraduationCap },
+  { title: "Social Links", url: "/admin/social-links", icon: Share2 },
 ];
 
 function AdminSidebar() {
