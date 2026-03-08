@@ -109,8 +109,6 @@ export const Header = () => {
   const getLinks = (key: MegaMenuKey) => {
     switch (key) {
       case "courses": return courseLinks;
-      case "resources": return resourceLinks;
-      case "community": return communityLinks;
       case "company": return companyLinks;
       default: return [];
     }
