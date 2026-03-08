@@ -109,8 +109,32 @@ export function Courses() {
           </p>
         </div>
 
+        {/* Search bar */}
+        <div className="max-w-md mx-auto mb-10 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 pr-10"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {filteredCourses.length === 0 ? (
+          <p className="text-center text-muted-foreground py-12">
+            No courses match your search. Try a different keyword.
+          </p>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses.map((course) => (
+          {filteredCourses.map((course) => (
             <Card
               key={course.id}
               className="overflow-hidden group hover:shadow-xl transition-all duration-300 border-border/50 bg-card"
