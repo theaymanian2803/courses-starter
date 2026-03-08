@@ -1,9 +1,7 @@
-import { Code2, BookMarked, Newspaper, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Trophy, Heart, Globe, Star } from "lucide-react";
+import { Code2, Youtube, Podcast, Github, BookOpen, MessageSquare, Users, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const resourceLinks = [
-  { icon: BookMarked, label: "Blog", to: "/courses" },
-  { icon: Newspaper, label: "Changelog", to: "/features" },
   { icon: Youtube, label: "YouTube", to: "/courses" },
   { icon: Podcast, label: "Podcast", to: "/courses" },
   { icon: Github, label: "Open Source", to: "/courses" },
@@ -13,10 +11,7 @@ const resourceLinks = [
 const communityLinks = [
   { icon: MessageSquare, label: "Discord Server", to: "/courses" },
   { icon: Users, label: "Student Forum", to: "/courses" },
-  { icon: Trophy, label: "Leaderboard", to: "/courses" },
   { icon: Heart, label: "Mentorship", to: "/courses" },
-  { icon: Globe, label: "Events", to: "/courses" },
-  { icon: Star, label: "Success Stories", to: "/about" },
 ];
 
 const companyLinks = [
@@ -26,6 +21,7 @@ const companyLinks = [
   { label: "FAQ", to: "/faq" },
   { label: "Contact", to: "/contact" },
   { label: "Policies", to: "/policies" },
+  { label: "Dashboard", to: "/dashboard" },
 ];
 
 export const Footer = () => {
