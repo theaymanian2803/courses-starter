@@ -146,6 +146,7 @@ export type Database = {
           created_at: string
           id: string
           lesson_id: string
+          parent_id: string | null
           updated_at: string
           user_id: string
         }
@@ -154,6 +155,7 @@ export type Database = {
           created_at?: string
           id?: string
           lesson_id: string
+          parent_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -162,6 +164,7 @@ export type Database = {
           created_at?: string
           id?: string
           lesson_id?: string
+          parent_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -171,6 +174,13 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_comments"
             referencedColumns: ["id"]
           },
         ]
