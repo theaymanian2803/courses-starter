@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, Code, Zap, Users, ArrowRight, Flame } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Play, Code, Zap, Users, ArrowRight, Flame, BookOpen, Clock, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const defaults = {
   heading_line1: "Master the",
@@ -24,6 +26,9 @@ const defaults = {
 };
 
 export const Hero = () => {
+  const [showCurriculum, setShowCurriculum] = useState(false);
+  const navigate = useNavigate();
+
   const { data: settings } = useQuery({
     queryKey: ["heroSettings"],
     queryFn: async () => {
@@ -38,6 +43,19 @@ export const Hero = () => {
     staleTime: 60000,
   });
 
+  const { data: topCourses } = useQuery({
+    queryKey: ["topCourses"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const h = settings || defaults;
 
   const stats = [
@@ -48,6 +66,7 @@ export const Hero = () => {
   ];
 
   return (
+    <>
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-hero">
       {/* Background */}
       {h.background_image_url ? (
@@ -143,11 +162,9 @@ export const Hero = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 group border-border/50">
-              <a href="#curriculum">
+            <Button variant="outline" size="lg" className="text-lg px-8 py-6 group border-border/50" onClick={() => setShowCurriculum(true)}>
                 <Play className="mr-2 h-5 w-5 group-hover:text-primary transition-colors" />
                 {h.cta_secondary_text}
-              </a>
             </Button>
           </motion.div>
 
@@ -191,5 +208,46 @@ export const Hero = () => {
         </div>
       </motion.div>
     </section>
+
+    {/* Curriculum Preview Modal */}
+    <Dialog open={showCurriculum} onOpenChange={setShowCurriculum}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold">Our Top Courses</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 mt-2">
+          {topCourses && topCourses.length > 0 ? (
+            topCourses.map((course) => (
+              <div
+                key={course.id}
+                onClick={() => { setShowCurriculum(false); navigate(`/course/${course.id}`); }}
+                className="flex items-start gap-4 p-4 rounded-xl border border-border/50 bg-muted/30 hover:bg-muted/60 transition-colors cursor-pointer group"
+              >
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{course.title}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{course.description || "No description"}</p>
+                  <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" />Self-paced</span>
+                    <span className="font-semibold text-primary">${course.price}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground text-center py-6">Courses coming soon!</p>
+          )}
+        </div>
+        <Button asChild size="lg" className="w-full mt-2">
+          <Link to="/courses" onClick={() => setShowCurriculum(false)}>
+            View All Courses
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
