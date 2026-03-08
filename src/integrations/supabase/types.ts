@@ -254,6 +254,51 @@ export type Database = {
         }
         Relationships: []
       }
+      instructors: {
+        Row: {
+          avatar_url: string | null
+          bio: string
+          created_at: string
+          github_url: string | null
+          id: string
+          is_active: boolean
+          linkedin_url: string | null
+          name: string
+          sort_order: number
+          specialties: Json
+          title: string
+          twitter_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio: string
+          created_at?: string
+          github_url?: string | null
+          id?: string
+          is_active?: boolean
+          linkedin_url?: string | null
+          name: string
+          sort_order?: number
+          specialties?: Json
+          title: string
+          twitter_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string
+          created_at?: string
+          github_url?: string | null
+          id?: string
+          is_active?: boolean
+          linkedin_url?: string | null
+          name?: string
+          sort_order?: number
+          specialties?: Json
+          title?: string
+          twitter_url?: string | null
+        }
+        Relationships: []
+      }
       lesson_comments: {
         Row: {
           content: string

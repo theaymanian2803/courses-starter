@@ -31,6 +31,7 @@ import {
   Sparkles,
   Crown,
   MessageSquareQuote,
+  GraduationCap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,7 @@ const adminNavItems = [
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
   { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquareQuote },
+  { title: "Instructors", url: "/admin/instructors", icon: GraduationCap },
 ];
 
 function AdminSidebar() {
