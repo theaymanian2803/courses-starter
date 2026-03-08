@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, Loader2, Save, Image, Type, BarChart3, Layers } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, Loader2, Save, Image, Type, BarChart3, Layers, Upload, Link } from "lucide-react";
 import { toast } from "sonner";
 
 interface HeroSettings {
@@ -223,8 +224,26 @@ export default function HeroControls() {
                   </Button>
                 </div>
               )}
-              <Input type="file" accept="image/*" onChange={handleImageUpload} className="bg-muted/50" />
-              <p className="text-xs text-muted-foreground">Upload a background image (max 5MB). Leave empty for default gradient.</p>
+              <Tabs defaultValue="upload" className="w-full">
+                <TabsList className="w-full">
+                  <TabsTrigger value="upload" className="flex-1 gap-1.5"><Upload className="h-3.5 w-3.5" />Upload</TabsTrigger>
+                  <TabsTrigger value="url" className="flex-1 gap-1.5"><Link className="h-3.5 w-3.5" />Paste URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="mt-2">
+                  <Input type="file" accept="image/*" onChange={handleImageUpload} className="bg-muted/50" />
+                  <p className="text-xs text-muted-foreground mt-1">Upload a background image (max 5MB).</p>
+                </TabsContent>
+                <TabsContent value="url" className="mt-2">
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={displayForm?.background_image_url || ""}
+                    onChange={(e) => updateField("background_image_url", e.target.value)}
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Paste a direct link to an image.</p>
+                </TabsContent>
+              </Tabs>
             </div>
 
             <Separator />
@@ -251,27 +270,46 @@ export default function HeroControls() {
                   </Button>
                 </div>
               )}
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
-                  if (file.size > 5 * 1024 * 1024) { toast.error("Image must be less than 5MB"); return; }
-                  try {
-                    const filePath = `hero/hero-overlay-${Date.now()}.${file.name.split(".").pop()}`;
-                    const { error: uploadError } = await supabase.storage.from("course-thumbnails").upload(filePath, file, { upsert: true });
-                    if (uploadError) throw uploadError;
-                    const { data: { publicUrl } } = supabase.storage.from("course-thumbnails").getPublicUrl(filePath);
-                    updateField("overlay_image_url", publicUrl);
-                    toast.success("Overlay image uploaded! Click Save to apply.");
-                  } catch (error: any) {
-                    toast.error(error.message || "Failed to upload image");
-                  }
-                }}
-                className="bg-muted/50"
-              />
+              <Tabs defaultValue="upload" className="w-full">
+                <TabsList className="w-full">
+                  <TabsTrigger value="upload" className="flex-1 gap-1.5"><Upload className="h-3.5 w-3.5" />Upload</TabsTrigger>
+                  <TabsTrigger value="url" className="flex-1 gap-1.5"><Link className="h-3.5 w-3.5" />Paste URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="mt-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
+                      if (file.size > 5 * 1024 * 1024) { toast.error("Image must be less than 5MB"); return; }
+                      try {
+                        const filePath = `hero/hero-overlay-${Date.now()}.${file.name.split(".").pop()}`;
+                        const { error: uploadError } = await supabase.storage.from("course-thumbnails").upload(filePath, file, { upsert: true });
+                        if (uploadError) throw uploadError;
+                        const { data: { publicUrl } } = supabase.storage.from("course-thumbnails").getPublicUrl(filePath);
+                        updateField("overlay_image_url", publicUrl);
+                        toast.success("Overlay image uploaded! Click Save to apply.");
+                      } catch (error: any) {
+                        toast.error(error.message || "Failed to upload image");
+                      }
+                    }}
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Upload an overlay image (max 5MB).</p>
+                </TabsContent>
+                <TabsContent value="url" className="mt-2">
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/overlay.png"
+                    value={displayForm?.overlay_image_url || ""}
+                    onChange={(e) => updateField("overlay_image_url", e.target.value)}
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Paste a direct link to an image.</p>
+                </TabsContent>
+              </Tabs>
               <div className="space-y-1.5">
                 <Label htmlFor="overlay_inset">Inset (px)</Label>
                 <div className="flex items-center gap-3">
