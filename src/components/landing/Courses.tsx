@@ -166,6 +166,13 @@ export function Courses() {
           ))}
         </div>
       </div>
+      {enrollCourse && (
+        <EnrollModal
+          open={!!enrollCourse}
+          onOpenChange={(open) => !open && setEnrollCourse(null)}
+          course={enrollCourse}
+        />
+      )}
     </section>
   );
 }
