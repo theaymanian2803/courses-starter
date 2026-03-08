@@ -55,6 +55,13 @@ export default function AdminDashboard() {
       color: "text-yellow-500",
       bgColor: "bg-yellow-500/10",
     },
+    {
+      title: "Total Users",
+      value: stats?.usersCount || 0,
+      icon: Users,
+      color: "text-purple-500",
+      bgColor: "bg-purple-500/10",
+    },
   ];
 
   return (
