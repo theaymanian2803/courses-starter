@@ -29,6 +29,8 @@ interface HeroSettings {
   stat4_value: string;
   stat4_label: string;
   background_image_url: string | null;
+  overlay_image_url: string | null;
+  overlay_inset: number;
 }
 
 export default function HeroControls() {
