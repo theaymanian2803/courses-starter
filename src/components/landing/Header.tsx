@@ -405,6 +405,10 @@ export const Header = () => {
                   Pricing
                 </a>
 
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-sm text-muted-foreground">Theme</span>
+                  <ThemeToggle />
+                </div>
                 <div className="h-px bg-border my-2" />
 
                 {user ? (
