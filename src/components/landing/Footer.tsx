@@ -21,6 +21,7 @@ const companyLinks = [
   { label: "FAQ", to: "/faq" },
   { label: "Contact", to: "/contact" },
   { label: "Policies", to: "/policies" },
+  { label: "Dashboard", to: "/dashboard" },
 ];
 
 export const Footer = () => {
