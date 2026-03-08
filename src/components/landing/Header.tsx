@@ -363,11 +363,23 @@ export const Header = () => {
                 <div className="h-px bg-border my-2" />
 
                 {user ? (
-                  <div className="flex gap-2 pt-1">
-                    <Button asChild variant="outline" size="sm" className="flex-1">
-                      <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
-                    </Button>
-                    <Button size="sm" className="flex-1" onClick={() => { handleSignOut(); setIsMobileMenuOpen(false); }}>
+                  <div className="flex flex-col gap-2 pt-1">
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" className="flex-1">
+                        <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm" className="flex-1">
+                        <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2">
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={user.user_metadata?.avatar_url} />
+                            <AvatarFallback className="text-[9px]">{userInitials}</AvatarFallback>
+                          </Avatar>
+                          My Account
+                        </Link>
+                      </Button>
+                    </div>
+                    <Button size="sm" variant="ghost" className="w-full text-muted-foreground" onClick={() => { handleSignOut(); setIsMobileMenuOpen(false); }}>
+                      <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </Button>
                   </div>
