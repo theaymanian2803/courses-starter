@@ -28,6 +28,7 @@ import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminBundles from "./pages/admin/AdminBundles";
 import AdminUpsells from "./pages/admin/AdminUpsells";
 import AdminTiers from "./pages/admin/AdminTiers";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
 
 const queryClient = new QueryClient();
 
