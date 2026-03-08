@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type MegaMenuKey = "courses" | "company" | null;
+type MegaMenuKey = "courses" | "resources" | "community" | "company" | null;
 
 const courseLinks = [
   { icon: BookOpen, label: "Browse Courses", desc: "Explore our full catalog", to: "/courses" },
