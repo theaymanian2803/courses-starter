@@ -26,7 +26,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, User, Crown, ShieldCheck, UserPlus, Trash2, Search } from "lucide-react";
+import { Loader2, User, Crown, ShieldCheck, UserPlus, Trash2, Search, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { toast } from "sonner";
