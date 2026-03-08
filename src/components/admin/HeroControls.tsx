@@ -226,6 +226,70 @@ export default function HeroControls() {
               <p className="text-xs text-muted-foreground">Upload a background image (max 5MB). Leave empty for default gradient.</p>
             </div>
 
+            <Separator />
+
+            {/* Overlay Image */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                <Layers className="h-4 w-4" />
+                Overlay Image (Faded Absolute)
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                This image sits behind the text content with a fade effect. Use the inset value to control how far inward it's positioned from all edges.
+              </p>
+              {displayForm?.overlay_image_url && (
+                <div className="relative rounded-lg overflow-hidden h-32 bg-muted">
+                  <img src={displayForm.overlay_image_url} alt="Hero overlay" className="w-full h-full object-cover opacity-60" />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => updateField("overlay_image_url", "")}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              )}
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
+                  if (file.size > 5 * 1024 * 1024) { toast.error("Image must be less than 5MB"); return; }
+                  try {
+                    const filePath = `hero/hero-overlay-${Date.now()}.${file.name.split(".").pop()}`;
+                    const { error: uploadError } = await supabase.storage.from("course-thumbnails").upload(filePath, file, { upsert: true });
+                    if (uploadError) throw uploadError;
+                    const { data: { publicUrl } } = supabase.storage.from("course-thumbnails").getPublicUrl(filePath);
+                    updateField("overlay_image_url", publicUrl);
+                    toast.success("Overlay image uploaded! Click Save to apply.");
+                  } catch (error: any) {
+                    toast.error(error.message || "Failed to upload image");
+                  }
+                }}
+                className="bg-muted/50"
+              />
+              <div className="space-y-1.5">
+                <Label htmlFor="overlay_inset">Inset (px)</Label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="overlay_inset"
+                    type="number"
+                    min={0}
+                    max={200}
+                    value={displayForm?.overlay_inset ?? 0}
+                    onChange={(e) => updateField("overlay_inset", e.target.value)}
+                    className="bg-muted/50 w-28"
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    Current: {displayForm?.overlay_inset ?? 0}px from all edges
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <Button onClick={handleSave} disabled={saveMutation.isPending} className="w-full py-5 box-glow">
               {saveMutation.isPending ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Save className="h-5 w-5 mr-2" />}
               Save Hero Changes
