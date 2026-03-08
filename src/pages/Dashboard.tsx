@@ -375,11 +375,11 @@ const Dashboard = () => {
         )}
       </aside>
 
-      {/* Mobile sidebar toggle */}
+      {/* Sidebar toggle button — always visible when closed */}
       {!isSidebarOpen && (
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="fixed bottom-4 left-4 z-50 md:hidden p-3 bg-primary text-primary-foreground rounded-full shadow-lg box-glow"
+          className="fixed bottom-4 left-4 z-50 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-colors"
         >
           <Menu className="h-5 w-5" />
         </button>
