@@ -5,7 +5,8 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, Clock, Users, ShoppingCart, Search, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BookOpen, Clock, Users, ShoppingCart, Search, X, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EnrollModal } from "@/components/checkout/EnrollModal";
 
@@ -17,6 +18,9 @@ type Course = {
   thumbnail_url: string | null;
 };
 
+type SortOption = "newest" | "oldest" | "price-low" | "price-high" | "title-az" | "title-za";
+type PriceFilter = "all" | "free" | "under25" | "under50" | "50plus";
+
 const COURSES_PER_PAGE = 9;
 
 export function Courses() {
@@ -24,6 +28,9 @@ export function Courses() {
   const [enrollCourse, setEnrollCourse] = useState<Course | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>("all");
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["courses"],
@@ -43,14 +50,55 @@ export function Courses() {
 
   const filteredCourses = useMemo(() => {
     if (!courses) return [];
-    if (!searchQuery.trim()) return courses;
-    const q = searchQuery.toLowerCase();
-    return courses.filter(
-      (c) =>
-        c.title.toLowerCase().includes(q) ||
-        (c.description && c.description.toLowerCase().includes(q))
-    );
-  }, [courses, searchQuery]);
+    let result = [...courses];
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (c) =>
+          c.title.toLowerCase().includes(q) ||
+          (c.description && c.description.toLowerCase().includes(q))
+      );
+    }
+
+    // Price filter
+    switch (priceFilter) {
+      case "free":
+        result = result.filter((c) => c.price === 0);
+        break;
+      case "under25":
+        result = result.filter((c) => c.price > 0 && c.price < 25);
+        break;
+      case "under50":
+        result = result.filter((c) => c.price > 0 && c.price < 50);
+        break;
+      case "50plus":
+        result = result.filter((c) => c.price >= 50);
+        break;
+    }
+
+    // Sort
+    switch (sortBy) {
+      case "oldest":
+        result.sort((a, b) => a.id.localeCompare(b.id));
+        break;
+      case "price-low":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "title-az":
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "title-za":
+        result.sort((a, b) => b.title.localeCompare(a.title));
+        break;
+    }
+
+    return result;
+  }, [courses, searchQuery, priceFilter, sortBy]);
 
   // Reset to page 1 when search changes
   const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
@@ -62,6 +110,25 @@ export function Courses() {
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (filter: PriceFilter) => {
+    setPriceFilter(filter);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (sort: SortOption) => {
+    setSortBy(sort);
+    setCurrentPage(1);
+  };
+
+  const hasActiveFilters = priceFilter !== "all" || sortBy !== "newest";
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setPriceFilter("all");
+    setSortBy("newest");
     setCurrentPage(1);
   };
 
@@ -125,22 +192,88 @@ export function Courses() {
           </p>
         </div>
 
-        {/* Search bar */}
-        <div className="max-w-md mx-auto mb-10 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search courses..."
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-10 pr-10"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => handleSearchChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        {/* Search & Filters */}
+        <div className="mb-10 space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search courses..."
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-10 pr-10"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => handleSearchChange("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <Button
+              variant={showFilters ? "default" : "outline"}
+              onClick={() => setShowFilters(!showFilters)}
+              className="shrink-0"
             >
-              <X className="h-4 w-4" />
-            </button>
+              <SlidersHorizontal className="h-4 w-4 mr-2" />
+              Filters
+              {hasActiveFilters && (
+                <span className="ml-1.5 w-2 h-2 rounded-full bg-primary-foreground" />
+              )}
+            </Button>
+          </div>
+
+          {showFilters && (
+            <div className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-border bg-card animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex-1 space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Price</label>
+                <Select value={priceFilter} onValueChange={(v) => handleFilterChange(v as PriceFilter)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Prices</SelectItem>
+                    <SelectItem value="free">Free</SelectItem>
+                    <SelectItem value="under25">Under $25</SelectItem>
+                    <SelectItem value="under50">Under $50</SelectItem>
+                    <SelectItem value="50plus">$50+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1 space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Sort By</label>
+                <Select value={sortBy} onValueChange={(v) => handleSortChange(v as SortOption)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="title-az">Title: A–Z</SelectItem>
+                    <SelectItem value="title-za">Title: Z–A</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {hasActiveFilters && (
+                <div className="flex items-end">
+                  <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-muted-foreground">
+                    <X className="h-3.5 w-3.5 mr-1" />
+                    Clear
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Active filter summary */}
+          {hasActiveFilters && (
+            <p className="text-center text-sm text-muted-foreground">
+              Showing {filteredCourses.length} course{filteredCourses.length !== 1 ? "s" : ""}
+            </p>
           )}
         </div>
 
