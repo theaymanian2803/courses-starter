@@ -70,7 +70,6 @@ export const Header = () => {
 
   const brandName = siteSettings?.brand_name || "Unc Code";
   const brandHighlight = siteSettings?.brand_highlight || "Academy";
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
