@@ -186,7 +186,7 @@ export const Header = () => {
               <Code2 className="h-5 w-5 text-primary" />
             </div>
             <span className="text-xl font-bold text-foreground">
-              Unc Code <span className="text-primary">Academy</span>
+              {brandName} <span className="text-primary">{brandHighlight}</span>
             </span>
           </Link>
 
