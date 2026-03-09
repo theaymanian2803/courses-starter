@@ -537,8 +537,10 @@ export type Database = {
           brand_highlight: string
           brand_name: string
           copyright_text: string
+          favicon_url: string | null
           footer_description: string
           id: string
+          logo_url: string | null
           promo_cta_link: string
           promo_cta_text: string
           promo_description: string
@@ -549,8 +551,10 @@ export type Database = {
           brand_highlight?: string
           brand_name?: string
           copyright_text?: string
+          favicon_url?: string | null
           footer_description?: string
           id?: string
+          logo_url?: string | null
           promo_cta_link?: string
           promo_cta_text?: string
           promo_description?: string
@@ -561,8 +565,10 @@ export type Database = {
           brand_highlight?: string
           brand_name?: string
           copyright_text?: string
+          favicon_url?: string | null
           footer_description?: string
           id?: string
+          logo_url?: string | null
           promo_cta_link?: string
           promo_cta_text?: string
           promo_description?: string

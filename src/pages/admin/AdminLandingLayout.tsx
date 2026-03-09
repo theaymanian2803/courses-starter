@@ -27,6 +27,8 @@ interface SiteSettings {
   copyright_text: string;
   promo_title: string;
   promo_description: string;
+  logo_url: string | null;
+  favicon_url: string | null;
   promo_cta_text: string;
   promo_cta_link: string;
 }
