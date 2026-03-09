@@ -532,6 +532,45 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          brand_highlight: string
+          brand_name: string
+          copyright_text: string
+          footer_description: string
+          id: string
+          promo_cta_link: string
+          promo_cta_text: string
+          promo_description: string
+          promo_title: string
+          updated_at: string
+        }
+        Insert: {
+          brand_highlight?: string
+          brand_name?: string
+          copyright_text?: string
+          footer_description?: string
+          id?: string
+          promo_cta_link?: string
+          promo_cta_text?: string
+          promo_description?: string
+          promo_title?: string
+          updated_at?: string
+        }
+        Update: {
+          brand_highlight?: string
+          brand_name?: string
+          copyright_text?: string
+          footer_description?: string
+          id?: string
+          promo_cta_link?: string
+          promo_cta_text?: string
+          promo_description?: string
+          promo_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       social_links: {
         Row: {
           github_url: string | null

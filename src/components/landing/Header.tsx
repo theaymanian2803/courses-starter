@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQuery } from "@tanstack/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +54,22 @@ export const Header = () => {
   const navigate = useNavigate();
   const headerRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .limit(1)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const brandName = siteSettings?.brand_name || "Unc Code";
+  const brandHighlight = siteSettings?.brand_highlight || "Academy";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -139,10 +156,10 @@ export const Header = () => {
       return (
         <div className="hidden lg:flex w-64 flex-col justify-center rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 p-5">
           <Zap className="h-8 w-8 text-primary mb-3" />
-          <p className="text-sm font-semibold text-foreground mb-1">New: AI Fundamentals</p>
-          <p className="text-xs text-muted-foreground mb-3">Master the basics of AI & machine learning in 4 weeks.</p>
+          <p className="text-sm font-semibold text-foreground mb-1">{siteSettings?.promo_title || "New: AI Fundamentals"}</p>
+          <p className="text-xs text-muted-foreground mb-3">{siteSettings?.promo_description || "Master the basics of AI & machine learning in 4 weeks."}</p>
           <Button asChild size="sm" className="w-fit">
-            <Link to="/courses" onClick={() => setActiveMega(null)}>Explore</Link>
+            <Link to={siteSettings?.promo_cta_link || "/courses"} onClick={() => setActiveMega(null)}>{siteSettings?.promo_cta_text || "Explore"}</Link>
           </Button>
         </div>
       );
@@ -169,7 +186,7 @@ export const Header = () => {
               <Code2 className="h-5 w-5 text-primary" />
             </div>
             <span className="text-xl font-bold text-foreground">
-              Unc Code <span className="text-primary">Academy</span>
+              {brandName} <span className="text-primary">{brandHighlight}</span>
             </span>
           </Link>
 
