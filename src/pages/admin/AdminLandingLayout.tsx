@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { GripVertical, Eye, EyeOff, ArrowUp, ArrowDown, Save, Type, PanelBottom, Megaphone } from "lucide-react";
+import { GripVertical, Eye, EyeOff, ArrowUp, ArrowDown, Save, Type, PanelBottom, Megaphone, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 interface Section {
   id: string;
@@ -26,6 +27,8 @@ interface SiteSettings {
   copyright_text: string;
   promo_title: string;
   promo_description: string;
+  logo_url: string | null;
+  favicon_url: string | null;
   promo_cta_text: string;
   promo_cta_link: string;
 }
@@ -137,6 +140,34 @@ export default function AdminLandingLayout() {
           Toggle visibility, reorder sections, and customize header & footer.
         </p>
       </div>
+
+      {/* Logo & Favicon */}
+      {settings && (
+        <Card className="border-border">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <ImageIcon className="h-5 w-5 text-primary" />
+              Logo & Favicon
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <ImageUpload
+              value={settings.logo_url || ""}
+              onChange={(url) => setSettings({ ...settings, logo_url: url })}
+              bucket="course-thumbnails"
+              folder="branding"
+              label="Site Logo"
+            />
+            <ImageUpload
+              value={settings.favicon_url || ""}
+              onChange={(url) => setSettings({ ...settings, favicon_url: url })}
+              bucket="course-thumbnails"
+              folder="branding"
+              label="Favicon"
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Header & Branding */}
       {settings && (
