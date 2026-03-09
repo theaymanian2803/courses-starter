@@ -55,6 +55,23 @@ export const Header = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .limit(1)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const brandName = siteSettings?.brand_name || "Unc Code";
+  const brandHighlight = siteSettings?.brand_highlight || "Academy";
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
