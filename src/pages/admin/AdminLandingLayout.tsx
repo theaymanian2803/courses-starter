@@ -141,6 +141,34 @@ export default function AdminLandingLayout() {
         </p>
       </div>
 
+      {/* Logo & Favicon */}
+      {settings && (
+        <Card className="border-border">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <ImageIcon className="h-5 w-5 text-primary" />
+              Logo & Favicon
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <ImageUpload
+              value={settings.logo_url || ""}
+              onChange={(url) => setSettings({ ...settings, logo_url: url })}
+              bucket="course-thumbnails"
+              folder="branding"
+              label="Site Logo"
+            />
+            <ImageUpload
+              value={settings.favicon_url || ""}
+              onChange={(url) => setSettings({ ...settings, favicon_url: url })}
+              bucket="course-thumbnails"
+              folder="branding"
+              label="Favicon"
+            />
+          </CardContent>
+        </Card>
+      )}
+
       {/* Header & Branding */}
       {settings && (
         <Card className="border-border">
