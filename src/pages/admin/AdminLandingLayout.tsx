@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { GripVertical, Eye, EyeOff, ArrowUp, ArrowDown, Save, Type, PanelBottom, Megaphone } from "lucide-react";
+import { GripVertical, Eye, EyeOff, ArrowUp, ArrowDown, Save, Type, PanelBottom, Megaphone, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 interface Section {
   id: string;
