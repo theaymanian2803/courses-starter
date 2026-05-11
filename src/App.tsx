@@ -73,6 +73,7 @@ const App = () => (
               <Route path="instructors" element={<AdminInstructors />} />
               <Route path="social-links" element={<AdminSocialLinks />} />
               <Route path="landing-layout" element={<AdminLandingLayout />} />
+              <Route path="comments" element={<AdminComments />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
