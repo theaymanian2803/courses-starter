@@ -60,6 +60,7 @@ const contentNavItems = [
 
 const systemNavItems = [
   { title: "Users", url: "/admin/users", icon: Users },
+  { title: "Comments", url: "/admin/comments", icon: ShieldAlert },
 ];
 
 function AdminSidebar() {
