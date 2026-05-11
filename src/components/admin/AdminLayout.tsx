@@ -33,6 +33,7 @@ import {
   MessageSquareQuote,
   GraduationCap,
   Share2,
+  ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +60,7 @@ const contentNavItems = [
 
 const systemNavItems = [
   { title: "Users", url: "/admin/users", icon: Users },
+  { title: "Comments", url: "/admin/comments", icon: ShieldAlert },
 ];
 
 function AdminSidebar() {
