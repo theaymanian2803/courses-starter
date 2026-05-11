@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { LessonComments } from "@/components/lesson/LessonComments";
+import { CourseCommentSection } from "@/components/course/CourseCommentSection";
 
 type Course = {
   id: string;
