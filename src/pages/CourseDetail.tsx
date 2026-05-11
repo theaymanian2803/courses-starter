@@ -647,6 +647,15 @@ export default function CourseDetail() {
             </CardContent>
           </Card>
         )}
+
+        {/* Course-level discussion */}
+        <div className="mt-12">
+          <CourseCommentSection
+            courseId={courseId!}
+            userId={userId}
+            title="Course Discussion"
+          />
+        </div>
       </section>
 
       <Footer />
