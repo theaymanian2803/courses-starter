@@ -152,6 +152,39 @@ export type Database = {
         }
         Relationships: []
       }
+      course_comments: {
+        Row: {
+          content: string
+          course_id: string
+          created_at: string
+          id: string
+          module_id: string | null
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          course_id: string
+          created_at?: string
+          id?: string
+          module_id?: string | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          course_id?: string
+          created_at?: string
+          id?: string
+          module_id?: string | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           created_at: string

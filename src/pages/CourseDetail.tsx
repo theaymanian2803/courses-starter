@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { LessonComments } from "@/components/lesson/LessonComments";
+import { CourseCommentSection } from "@/components/course/CourseCommentSection";
 
 type Course = {
   id: string;
@@ -623,6 +624,14 @@ export default function CourseDetail() {
                         </li>
                       ))}
                     </ul>
+                    <div className="mt-6 ml-12 pr-4">
+                      <CourseCommentSection
+                        courseId={courseId!}
+                        moduleId={module.id}
+                        userId={userId}
+                        title="Section Discussion"
+                      />
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               );
@@ -638,6 +647,15 @@ export default function CourseDetail() {
             </CardContent>
           </Card>
         )}
+
+        {/* Course-level discussion */}
+        <div className="mt-12">
+          <CourseCommentSection
+            courseId={courseId!}
+            userId={userId}
+            title="Course Discussion"
+          />
+        </div>
       </section>
 
       <Footer />
