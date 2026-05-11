@@ -624,6 +624,14 @@ export default function CourseDetail() {
                         </li>
                       ))}
                     </ul>
+                    <div className="mt-6 ml-12 pr-4">
+                      <CourseCommentSection
+                        courseId={courseId!}
+                        moduleId={module.id}
+                        userId={userId}
+                        title="Section Discussion"
+                      />
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               );
